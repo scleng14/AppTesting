@@ -2,7 +2,7 @@
 import streamlit as st
 from datetime import datetime
 from PIL import Image
-from utils.emotion import EmotionDetector
+from emotion_utils.detector import EmotionDetector
 from location_utils.extract_gps import get_location
 import pandas as pd
 import os
