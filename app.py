@@ -64,28 +64,46 @@ def sidebar_design(username):
     st.sidebar.markdown("- View and filter upload history")
     st.sidebar.markdown("- Visualize your emotion distribution")
 
-def get_location(image):
-    """Integrated location detection pipeline"""
-    # 1. Try GPS EXIF data
-    gps_data = extract_gps(image)
-    if gps_data:
-        coords = convert_gps(gps_data)
-        if coords:
-            address = get_address_from_coords(coords)
-            if address:
-                return address, "GPS (EXIF)", coords
-    
-    # 2. Try landmark recognition
-    landmark_name = detect_landmark(image)
-    if landmark_name:
-        coords, source = query_landmark_coords(landmark_name)
-        if coords:
-            address = get_address_from_coords(coords)
-            if address:
-                return address, f"Landmark recognition ({source})", coords
-        return landmark_name, "Landmark detected", coords
-    
-    return "Unknown", "No location data", None
+def extract_gps(image: Image.Image):
+    """从 PIL Image 中提取 GPS 原始信息"""
+    try:
+        if not hasattr(image, '_getexif') or image._getexif() is None:
+            return None
+
+        exif_data = image._getexif()
+        gps_info = {}
+
+        for key, val in exif_data.items():
+            tag = ExifTags.TAGS.get(key)
+            if tag == "GPSInfo":
+                for t in val:
+                    sub_tag = ExifTags.GPSTAGS.get(t)
+                    gps_info[sub_tag] = val[t]
+
+        if "GPSLatitude" in gps_info and "GPSLongitude" in gps_info:
+            lat = _convert_to_degrees(gps_info["GPSLatitude"])
+            lon = _convert_to_degrees(gps_info["GPSLongitude"])
+
+            if gps_info.get("GPSLatitudeRef") == "S":
+                lat = -lat
+            if gps_info.get("GPSLongitudeRef") == "W":
+                lon = -lon
+
+            return (lat, lon)
+        return None
+    except Exception:
+        return None
+
+def _convert_to_degrees(value):
+    """将 GPS 度/分/秒 转换为十进制度"""
+    try:
+        d, m, s = value
+        return d + m / 60.0 + s / 3600.0
+    except Exception:
+        return None
+
+def extract_gps_from_image(pil_image):
+    return extract_gps(pil_image)
 
 # ----------------- Main App -----------------
 def main():
