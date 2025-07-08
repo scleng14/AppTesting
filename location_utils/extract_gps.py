@@ -1,70 +1,56 @@
-# location_utils/extract_gps.py
-
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
+import time
+
+MAX_RETRIES = 2
 
 def extract_gps(image_path):
     try:
-        image = Image.open(image_path)
-        
- # Handle different EXIF formats
-        if hasattr(image, '_getexif'):
-            exif_data = image._getexif()
-        elif hasattr(image, 'getexif'):
-            exif_data = image.getexif()
-        else:
-            return None
-            
-        if not exif_data:
-            # Try alternative method for some formats
-            try:
-                exif_data = image.info.get('exif')
-                if exif_data:
-                    from PIL.ExifTags import Exif
-                    exif_data = Exif().get(exif_data)
-            except:
-                return None
-        
-        gps_info = {}
-        for tag_id,value in exif_data.items():
-            tag=TAGS.get(tag_id)
-            if tag=="GPSInfo":
-                for key in value:
-                    decoded=GPSTAGS.get(key,key)
-                    gps_info[decoded]=value[key]
-        return gps_info if gps_info
+        with Image.open(image_path) as img:
+            exif = {
+                TAGS.get(k): v
+                for k, v in img._getexif().items()
+                if k in TAGS
+            }
+            gps_info = exif.get('GPSInfo', {})
+            return {
+                GPSTAGS.get(k): v
+                for k, v in gps_info.items()
+                if k in GPSTAGS
+            }
     except Exception as e:
         print(f"[EXIF ERROR] {str(e)}")
-        return none
-        
-       
-def convert_gps(gps_info):
-    try:
-        def _safe_convert(coord, ref):
-            # 处理不同相机格式
-            if isinstance(coord, (int, float)):
-                return coord if ref in ['N','E'] else -coord
-            
-            if len(coord) == 3:  # 标准度分秒格式
-                deg, minute, sec = coord
-                result = deg[0]/deg[1] + minute[0]/minute[1]/60 + sec[0]/sec[1]/3600
-            elif len(coord) == 2:  # 只有度和分
-                deg, minute = coord
-                result = deg[0]/deg[1] + minute[0]/minute[1]/60
-            else:  # 十进制度
-                result = coord[0]/coord[1]
-                
-            return result if ref in ['N','E'] else -result
-
-        required = ["GPSLatitude", "GPSLatitudeRef", "GPSLongitude", "GPSLongitudeRef"]
-        if not all(k in gps_info for k in required):
-            return None
-            
-        lat=_safe_convert(gps_info["GPSLatitude"], gps_info["GPSLatitudeRef"]),
-        lon=_safe_convert(gps_info["GPSLongitude"], gps_info["GPSLongitudeRef"])
-        
-        return round(lat,6),round(lon ,6)
-        
-    except Exception as e:
-        print(f"[CONVERT ERROR] {e}")
         return None
+
+def convert_gps(gps):
+    try:
+        lat_data = gps['GPSLatitude']
+        lon_data = gps['GPSLongitude']
+
+        lat = lat_data[0] + lat_data[1]/60 + lat_data[2]/3600
+        lon = lon_data[0] + lon_data[1]/60 + lon_data[2]/3600
+
+        if gps['GPSLatitudeRef'] == 'S':
+            lat = -lat
+        if gps['GPSLongitudeRef'] == 'W':
+            lon = -lon
+
+        return round(lat, 6), round(lon, 6)
+    except Exception as e:
+        print(f"[GPS CONVERT ERROR] {str(e)}")
+        return None
+
+geolocator = Nominatim(user_agent="geo_locator_pro_v3")
+reverse_geocode = RateLimiter(geolocator.reverse, min_delay_seconds=2)
+
+def get_address_from_coords(coords):
+    for _ in range(MAX_RETRIES):
+        try:
+            location = reverse_geocode(coords, language='en')
+            return location.address if location else None
+        except Exception as e:
+            print(f"[GEOCODE RETRY {_+1}] {str(e)}")
+            time.sleep(1)
+    return None
