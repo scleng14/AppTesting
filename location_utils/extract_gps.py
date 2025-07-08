@@ -1,38 +1,43 @@
-from PIL.ExifTags import TAGS, GPSTAGS
+# extract_gps.py
+from PIL import Image, ExifTags
 
-def extract_gps(image):
-    """从 PIL Image 中提取 GPS 数据"""
+def extract_gps(image: Image.Image):
+    """从 PIL Image 中提取 GPS 原始信息"""
     try:
-        if not hasattr(image, '_getexif'):
+        if not hasattr(image, '_getexif') or image._getexif() is None:
             return None
-            
-        exif = {
-            TAGS.get(k): v 
-            for k, v in image._getexif().items() 
-            if k in TAGS
-        }
-        gps_info = exif.get('GPSInfo', {})
-        return {
-            GPSTAGS.get(k): v 
-            for k, v in gps_info.items() 
-            if k in GPSTAGS
-        }
+
+        exif_data = image._getexif()
+        gps_info = {}
+
+        for key, val in exif_data.items():
+            tag = ExifTags.TAGS.get(key)
+            if tag == "GPSInfo":
+                for t in val:
+                    sub_tag = ExifTags.GPSTAGS.get(t)
+                    gps_info[sub_tag] = val[t]
+
+        if "GPSLatitude" in gps_info and "GPSLongitude" in gps_info:
+            lat = _convert_to_degrees(gps_info["GPSLatitude"])
+            lon = _convert_to_degrees(gps_info["GPSLongitude"])
+
+            if gps_info.get("GPSLatitudeRef") == "S":
+                lat = -lat
+            if gps_info.get("GPSLongitudeRef") == "W":
+                lon = -lon
+
+            return (lat, lon)
+        return None
     except Exception:
         return None
 
-def convert_gps(gps):
-    """将 GPS 坐标转换为十进制"""
+def _convert_to_degrees(value):
+    """将 GPS 度/分/秒 转换为十进制度"""
     try:
-        lat_data = gps['GPSLatitude']
-        lon_data = gps['GPSLongitude']
-        lat = lat_data[0] + lat_data[1]/60 + lat_data[2]/3600
-        lon = lon_data[0] + lon_data[1]/60 + lon_data[2]/3600
-        
-        if gps['GPSLatitudeRef'] == 'S':
-            lat = -lat
-        if gps['GPSLongitudeRef'] == 'W':
-            lon = -lon
-            
-        return round(lat, 6), round(lon, 6)
+        d, m, s = value
+        return d + m / 60.0 + s / 3600.0
     except Exception:
         return None
+
+def extract_gps_from_image(pil_image):
+    return extract_gps(pil_image)
