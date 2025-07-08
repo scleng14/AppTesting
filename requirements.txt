@@ -1,4 +1,4 @@
-# Core dependencies
+# Streamlit and basic packages
 streamlit>=1.30.0
 pillow==10.1.0
 opencv-python-headless==4.9.0.80
@@ -8,17 +8,23 @@ matplotlib==3.8.2
 seaborn==0.13.0
 plotly>=5.0.0
 
-# DeepFace & Emotion analysis
+# Emotion detection
 deepface==0.0.79
-tensorflow>=2.6.0,<2.16.0
+tensorflow==2.15.0
 protobuf==3.20.3
 
 # Geolocation
 geopy==2.4.1
 python-dotenv==1.0.0
 
-# CLIP model support (Hugging Face Transformers)
+# Landmark detection (CLIP model)
 transformers==4.39.3
-torch>=2.1.0
+torch==2.1.0
+torchvision==0.16.0
+torchaudio==2.1.0
 
-
+# Utility & formatting (safe versions)
+markdown-it-py==3.0.0
+mdurl==0.1.2
+pygments==2.19.2
+rich==14.0.0
