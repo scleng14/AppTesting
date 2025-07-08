@@ -1,76 +1,66 @@
-# app.py
 import streamlit as st
-from datetime import datetime
-from PIL import Image
-from emotion_utils.detector import EmotionDetector
+from modules.emotion_detector import EmotionDetector
 from location_utils.extract_gps import get_location
+from datetime import datetime
 import pandas as pd
 import os
 
-# ========== Setup ==========
-st.set_page_config(page_title="Emotion and Location Analyzer", layout="wide")
+st.set_page_config(page_title="Emotion & Location Detector", layout="wide")
 
-if "history" not in st.session_state:
-    st.session_state.history = []
+# ===== Sidebar =====
+st.sidebar.title("Emotion App")
+username = st.sidebar.text_input("Enter your name:", value="Guest")
 
-# ========== Sidebar ==========
-with st.sidebar:
-    st.title("📷 Analyzer Options")
-    st.markdown("*Tips for Better Results:*\n- Use clear, front-facing images\n- Ensure good lighting\n- Avoid obstructed faces")
-    st.info("💡 Tip: You can switch tabs to view emotion, location, and history.")
+st.sidebar.markdown("---")
+st.sidebar.info("💬 Note: This demo analyzes face emotions and estimates photo location based on GPS or landmark features.")
 
-# ========== Tabs ==========
-tabs = st.tabs(["Home", "Location", "History"])
+# ===== Tabs =====
+tabs = st.tabs(["Home", "Location", "History", "Chart"])
 
-# ========== Tab 0: Emotion ==========
+# ===== Tab 0: Emotion Detection =====
 with tabs[0]:
-    st.header("Face Emotion Detection")
-    uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"], key="emotion")
+    st.header("😊 Emotion Detection")
+    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        detector = EmotionDetector(uploaded_file)
+        detector.run(username)
 
-    if uploaded_image is not None:
-        img = Image.open(uploaded_image).convert("RGB")
-        st.image(img, caption="Uploaded Image", use_column_width=True)
-        detector = EmotionDetector()
-        result = detector.analyze_emotion(img)
-
-        st.subheader("Emotion Results")
-        st.write(result)
-
-# ========== Tab 1: Location ==========
+# ===== Tab 1: Location Detection =====
 with tabs[1]:
-    st.header("📍 Location Recognition")
-    location_image = st.file_uploader("Upload an image with GPS or landmark", type=["jpg", "jpeg", "png"], key="location")
-    username = st.text_input("Your Name", max_chars=50)
+    st.header("📍 Location Detection")
+    loc_file = st.file_uploader("Upload an image for location detection", type=["jpg", "jpeg", "png"], key="loc")
 
-    if location_image is not None:
-        img = Image.open(location_image).convert("RGB")
-        st.image(img, caption="Uploaded Image", use_column_width=True)
+    if loc_file is not None:
+        with open("temp_location.jpg", "wb") as f:
+            f.write(loc_file.read())
 
-        if not username.strip():
-            st.warning("Please enter your name to continue.")
-        else:
-            with st.spinner("Analyzing location..."):
-                address, method = get_location(location_image)
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with st.spinner("Analyzing location..."):
+            location_result, method = get_location("temp_location.jpg")
 
-                st.success(f"📍 Detected Location: {address}")
-                st.info(f"Method Used: {method}")
-                st.caption(f"Timestamp: {timestamp}")
+        st.success("Detection completed!")
+        st.image("temp_location.jpg", caption="Uploaded Image", use_column_width=True)
+        st.markdown(f"**Detected Location:** {location_result}")
+        st.markdown(f"**Detection Method:** {method}")
+        st.markdown(f"**Username:** {username}")
+        st.markdown(f"**Timestamp:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-                st.session_state.history.append({
-                    "username": username,
-                    "location": address,
-                    "method": method,
-                    "timestamp": timestamp
-                })
-
-# ========== Tab 2: History ==========
+# ===== Tab 2: History =====
 with tabs[2]:
-    st.header("🕓 Analysis History")
-    if st.session_state.history:
-        df = pd.DataFrame(st.session_state.history)
-        st.dataframe(df, use_container_width=True)
+    st.header("📚 History Records")
+    if os.path.exists("history.csv"):
+        df = pd.read_csv("history.csv")
+        st.dataframe(df)
         csv = df.to_csv(index=False).encode("utf-8")
-        st.download_button("Download CSV", csv, "history.csv", "text/csv")
+        st.download_button("📥 Download History", csv, "history.csv", "text/csv")
     else:
-        st.info("No history yet. Try uploading an image first.")
+        st.info("No history available yet.")
+
+# ===== Tab 3: Chart =====
+with tabs[3]:
+    st.header("📊 Emotion Chart")
+    if os.path.exists("history.csv"):
+        df = pd.read_csv("history.csv")
+        emotion_counts = df["emotion"].value_counts()
+        st.bar_chart(emotion_counts)
+    else:
+        st.info("No data to display chart.")
