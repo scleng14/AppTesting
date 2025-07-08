@@ -1,7 +1,7 @@
 import streamlit as st
 import cv2
 import numpy as np
-from PIL import Image, ImageOps
+from PIL import Image, ExifTags
 import pandas as pd
 from datetime import datetime
 import os
