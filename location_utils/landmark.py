@@ -1,47 +1,61 @@
-from transformers import CLIPProcessor, CLIPModel
-from PIL import Image
 import torch
-import os
+from transformers import CLIPProcessor, CLIPModel
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
+import requests
 
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-
-# Add more Malaysian or global landmarks below
-landmark_dict = {
-    "KLCC Twin Towers": "Kuala Lumpur, Malaysia",
-    "Petronas Towers": "Kuala Lumpur, Malaysia",
-    "KL Tower": "Kuala Lumpur, Malaysia",
-    "Menara Kuala Lumpur": "Kuala Lumpur, Malaysia",
-    "Sultan Abdul Samad Building": "Kuala Lumpur, Malaysia",
-    "Mount Fuji": "Japan",
-    "Eiffel Tower": "Paris, France",
-    "Great Wall of China": "China",
-    "Statue of Liberty": "New York, USA",
-    "Taj Mahal": "Agra, India",
-    "Colosseum": "Rome, Italy",
-    "Sydney Opera House": "Sydney, Australia"
+# 预定义地标数据库
+LANDMARK_KEYWORDS = {
+    "petronas towers": ("Petronas Twin Towers", "Kuala Lumpur", 3.1579, 101.7116),
+    # ... (你的完整地标列表)
 }
 
-def detect_landmark(image_path):
+# 初始化模型
+CLIP_MODEL_NAME = "geolocal/StreetCLIP"
+CLIP_THRESHOLD = 0.6
+OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+
+@st.cache_resource
+def load_models():
+    return (
+        CLIPModel.from_pretrained(CLIP_MODEL_NAME),
+        CLIPProcessor.from_pretrained(CLIP_MODEL_NAME),
+        RateLimiter(Nominatim(user_agent="geo_locator").reverse, min_delay_seconds=2)
+    )
+
+clip_model, clip_processor, reverse_geocode = load_models()
+
+def detect_landmark(image):
+    """使用 CLIP 模型识别地标"""
     try:
-        image = Image.open(image_path).convert("RGB")
-        texts = list(landmark_dict.keys())
+        inputs = clip_processor(
+            text=list(LANDMARK_KEYWORDS.keys()),
+            images=image,
+            return_tensors="pt",
+            padding=True
+        )
+        outputs = clip_model(**inputs)
+        probs = outputs.logits_per_image.softmax(dim=1).squeeze()
+        max_prob = torch.max(probs).item()
+        
+        if max_prob > CLIP_THRESHOLD:
+            return list(LANDMARK_KEYWORDS.keys())[torch.argmax(probs).item()]
+        return None
+    except Exception:
+        return None
 
-        inputs = processor(text=texts, images=image, return_tensors="pt", padding=True)
-        outputs = model(**inputs)
-
-        logits_per_image = outputs.logits_per_image
-        probs = logits_per_image.softmax(dim=1)[0]
-
-        top_index = torch.argmax(probs).item()
-        top_landmark = texts[top_index]
-        top_confidence = probs[top_index].item()
-
-        if top_confidence > 0.3:
-            return top_landmark, landmark_dict[top_landmark], round(top_confidence * 100, 2)
-        else:
-            return None, None, 0.0
-
-    except Exception as e:
-        print(f"[LANDMARK ERROR] {str(e)}")
-        return None, None, 0.0
+def query_landmark_coords(landmark_name):
+    """查询地标坐标"""
+    if landmark_name in LANDMARK_KEYWORDS:
+        return LANDMARK_KEYWORDS[landmark_name][2:], "Predefined"
+    
+    try:
+        response = requests.get(f"https://nominatim.openstreetmap.org/search?q={landmark_name}&format=json")
+        if response.json():
+            lat = float(response.json()[0]['lat'])
+            lon = float(response.json()[0]['lon'])
+            return (lat, lon), "OpenStreetMap"
+    except Exception:
+        pass
+    
+    return None, "Failed"
