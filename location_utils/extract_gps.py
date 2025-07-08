@@ -1,56 +1,66 @@
-from PIL import Image
-from PIL.ExifTags import TAGS, GPSTAGS
-from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
-import time
+import streamlit as st
+from modules.emotion_detector import EmotionDetector
+from location_utils.extract_gps import get_location
+from datetime import datetime
+import pandas as pd
+import os
 
-MAX_RETRIES = 2
+st.set_page_config(page_title="Emotion & Location Detector", layout="wide")
 
-def extract_gps(image_path):
-    try:
-        with Image.open(image_path) as img:
-            exif = {
-                TAGS.get(k): v
-                for k, v in img._getexif().items()
-                if k in TAGS
-            }
-            gps_info = exif.get('GPSInfo', {})
-            return {
-                GPSTAGS.get(k): v
-                for k, v in gps_info.items()
-                if k in GPSTAGS
-            }
-    except Exception as e:
-        print(f"[EXIF ERROR] {str(e)}")
-        return None
+# ===== Sidebar =====
+st.sidebar.title("Emotion App")
+username = st.sidebar.text_input("Enter your name:", value="Guest")
 
-def convert_gps(gps):
-    try:
-        lat_data = gps['GPSLatitude']
-        lon_data = gps['GPSLongitude']
+st.sidebar.markdown("---")
+st.sidebar.info("💬 Note: This demo analyzes face emotions and estimates photo location based on GPS or landmark features.")
 
-        lat = lat_data[0] + lat_data[1]/60 + lat_data[2]/3600
-        lon = lon_data[0] + lon_data[1]/60 + lon_data[2]/3600
+# ===== Tabs =====
+tabs = st.tabs(["Home", "Location", "History", "Chart"])
 
-        if gps['GPSLatitudeRef'] == 'S':
-            lat = -lat
-        if gps['GPSLongitudeRef'] == 'W':
-            lon = -lon
+# ===== Tab 0: Emotion Detection =====
+with tabs[0]:
+    st.header("😊 Emotion Detection")
+    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        detector = EmotionDetector(uploaded_file)
+        detector.run(username)
 
-        return round(lat, 6), round(lon, 6)
-    except Exception as e:
-        print(f"[GPS CONVERT ERROR] {str(e)}")
-        return None
+# ===== Tab 1: Location Detection =====
+with tabs[1]:
+    st.header("📍 Location Detection")
+    loc_file = st.file_uploader("Upload an image for location detection", type=["jpg", "jpeg", "png"], key="loc")
 
-geolocator = Nominatim(user_agent="geo_locator_pro_v3")
-reverse_geocode = RateLimiter(geolocator.reverse, min_delay_seconds=2)
+    if loc_file is not None:
+        with open("temp_location.jpg", "wb") as f:
+            f.write(loc_file.read())
 
-def get_address_from_coords(coords):
-    for _ in range(MAX_RETRIES):
-        try:
-            location = reverse_geocode(coords, language='en')
-            return location.address if location else None
-        except Exception as e:
-            print(f"[GEOCODE RETRY {_+1}] {str(e)}")
-            time.sleep(1)
-    return None
+        with st.spinner("Analyzing location..."):
+            location_result, method = get_location("temp_location.jpg")
+
+        st.success("Detection completed!")
+        st.image("temp_location.jpg", caption="Uploaded Image", use_column_width=True)
+        st.markdown(f"**Detected Location:** {location_result}")
+        st.markdown(f"**Detection Method:** {method}")
+        st.markdown(f"**Username:** {username}")
+        st.markdown(f"**Timestamp:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+# ===== Tab 2: History =====
+with tabs[2]:
+    st.header("📚 History Records")
+    if os.path.exists("history.csv"):
+        df = pd.read_csv("history.csv")
+        st.dataframe(df)
+        csv = df.to_csv(index=False).encode("utf-8")
+        st.download_button("📥 Download History", csv, "history.csv", "text/csv")
+    else:
+        st.info("No history available yet.")
+
+# ===== Tab 3: Chart =====
+with tabs[3]:
+    st.header("📊 Emotion Chart")
+    if os.path.exists("history.csv"):
+        df = pd.read_csv("history.csv")
+        emotion_counts = df["emotion"].value_counts()
+        st.bar_chart(emotion_counts)
+    else:
+        st.info("No data to display chart.")
