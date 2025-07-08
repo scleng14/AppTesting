@@ -1,32 +1,30 @@
+# landmark.py
 import torch
 from transformers import CLIPProcessor, CLIPModel
-from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
-import requests
+from PIL import Image
+import streamlit as st
 
-# 预定义地标数据库
+# 地标关键字与坐标映射
 LANDMARK_KEYWORDS = {
     "petronas towers": ("Petronas Twin Towers", "Kuala Lumpur", 3.1579, 101.7116),
-    # ... (你的完整地标列表)
+    "kl tower": ("KL Tower", "Kuala Lumpur", 3.1528, 101.7037),
+    "pyramid sunway": ("Sunway Pyramid", "Selangor", 3.0731, 101.6078),
+    "penang bridge": ("Penang Bridge", "Penang", 5.3363, 100.3076),
+    "malacca straits mosque": ("Malacca Straits Mosque", "Melaka", 2.1896, 102.2501),
 }
 
-# 初始化模型
 CLIP_MODEL_NAME = "geolocal/StreetCLIP"
 CLIP_THRESHOLD = 0.6
-OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 
 @st.cache_resource
-def load_models():
-    return (
-        CLIPModel.from_pretrained(CLIP_MODEL_NAME),
-        CLIPProcessor.from_pretrained(CLIP_MODEL_NAME),
-        RateLimiter(Nominatim(user_agent="geo_locator").reverse, min_delay_seconds=2)
-    )
+def load_clip():
+    model = CLIPModel.from_pretrained(CLIP_MODEL_NAME)
+    processor = CLIPProcessor.from_pretrained(CLIP_MODEL_NAME)
+    return model, processor
 
-clip_model, clip_processor, reverse_geocode = load_models()
+clip_model, clip_processor = load_clip()
 
-def detect_landmark(image):
-    """使用 CLIP 模型识别地标"""
+def detect_landmark(image: Image.Image):
     try:
         inputs = clip_processor(
             text=list(LANDMARK_KEYWORDS.keys()),
@@ -37,25 +35,10 @@ def detect_landmark(image):
         outputs = clip_model(**inputs)
         probs = outputs.logits_per_image.softmax(dim=1).squeeze()
         max_prob = torch.max(probs).item()
-        
         if max_prob > CLIP_THRESHOLD:
-            return list(LANDMARK_KEYWORDS.keys())[torch.argmax(probs).item()]
+            match = list(LANDMARK_KEYWORDS.keys())[torch.argmax(probs).item()]
+            coords = LANDMARK_KEYWORDS[match][2:]
+            return coords
         return None
     except Exception:
         return None
-
-def query_landmark_coords(landmark_name):
-    """查询地标坐标"""
-    if landmark_name in LANDMARK_KEYWORDS:
-        return LANDMARK_KEYWORDS[landmark_name][2:], "Predefined"
-    
-    try:
-        response = requests.get(f"https://nominatim.openstreetmap.org/search?q={landmark_name}&format=json")
-        if response.json():
-            lat = float(response.json()[0]['lat'])
-            lon = float(response.json()[0]['lon'])
-            return (lat, lon), "OpenStreetMap"
-    except Exception:
-        pass
-    
-    return None, "Failed"
