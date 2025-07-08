@@ -1,7 +1,6 @@
 import torch
 from PIL import Image
 from transformers import CLIPProcessor, CLIPModel
-import requests
 import streamlit as st
 
 # 地标数据库（可扩展）
@@ -25,16 +24,20 @@ def load_clip_model():
 
 clip_model, clip_processor = load_clip_model()
 
-def detect_landmark(image_path):
+def detect_landmark(image):
     """
     用 CLIP 模型识别图像中的已知地标。
     参数:
-        image_path: 图片路径
+        image: PIL.Image 对象
     返回:
-        匹配到的 landmark 名称（str） 或 None
+        匹配到的 landmark 描述（str） 或 None
     """
     try:
-        image = Image.open(image_path).convert("RGB")
+        if not isinstance(image, Image.Image):
+            image = Image.open(image).convert("RGB")
+        else:
+            image = image.convert("RGB")
+
         inputs = clip_processor(
             text=list(LANDMARK_KEYWORDS.keys()),
             images=image,
@@ -46,8 +49,9 @@ def detect_landmark(image_path):
         max_prob = torch.max(probs).item()
 
         if max_prob > CLIP_THRESHOLD:
-            best_match = list(LANDMARK_KEYWORDS.keys())[torch.argmax(probs).item()]
-            return best_match
+            best_key = list(LANDMARK_KEYWORDS.keys())[torch.argmax(probs).item()]
+            name, city, lat, lon = LANDMARK_KEYWORDS[best_key]
+            return f"{name}, {city} (Lat: {lat}, Lon: {lon})"
         else:
             return None
     except Exception:
