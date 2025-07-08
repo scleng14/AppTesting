@@ -92,13 +92,13 @@ def main():
                     detected_img = detector.draw_detections(img, detections)
 
                     # Attempt GPS extraction or fallback landmark detection
-                    location = extract_gps_from_image(image)
-                    if not location:
+                    coords = extract_gps_from_image(image)
+                    if coords:
+                        location = reverse_geocode(coords)
+                    else:
                         location = detect_landmark(image)
                     if not location:
                         location = "Unknown"
-                    else:
-                        location = reverse_geocode(location)
 
                     col1, col2 = st.columns([1, 2])
                     with col1:
@@ -125,12 +125,23 @@ def main():
                     st.error(f"Error while processing the image: {e}")
 
     with tabs[1]:
-        st.subheader("🗺️ Location Map Preview")
-        st.caption("Shows a sample point near Kuala Lumpur as demo.")
-        st.map(pd.DataFrame({
-            'lat': [3.139 + random.uniform(-0.01, 0.01)],
-            'lon': [101.6869 + random.uniform(-0.01, 0.01)]
-        }))
+        st.header("📍 Location Detection")
+        loc_file = st.file_uploader("Upload an image for location detection", type=["jpg", "jpeg", "png"], key="loc")
+        if loc_file is not None:
+            image = Image.open(loc_file)
+            coords = extract_gps_from_image(image)
+            if coords:
+                location_text = reverse_geocode(coords)
+                method = "GPS"
+            else:
+                location_text = detect_landmark(image)
+                method = "Landmark" if location_text else "None"
+
+            st.success("Detection completed!")
+            st.image(image, caption="Uploaded Image", use_column_width=True)
+            st.markdown(f"**Detected Location:** {location_text if location_text else 'Unknown'}")
+            st.markdown(f"**Detection Method:** {method}")
+            st.markdown(f"**Timestamp:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     with tabs[2]:
         st.subheader("📜 Upload History")
@@ -172,6 +183,7 @@ def main():
                 st.error(f"Error generating chart: {e}")
         else:
             st.warning("Please enter your username to generate your emotion chart.")
+
 
 if __name__ == "__main__":
     main()
