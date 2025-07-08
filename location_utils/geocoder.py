@@ -1,20 +1,21 @@
 from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
+from geopy.exc import GeocoderUnavailable, GeocoderTimedOut
 
-# 初始化 geopy 的地理编码器（用于反向地理编码）
-geolocator = Nominatim(user_agent="location_app_gps")
-reverse_geocode = RateLimiter(geolocator.reverse, min_delay_seconds=1)
+# 创建 geolocator 实例（避免每次都创建新的）
+geolocator = Nominatim(user_agent="emotion-location-app", timeout=10)
 
-def get_address_from_coords(coords):
+def reverse_geocode(coords):
     """
-    使用纬度和经度坐标进行反向地理编码，返回地址信息。
+    根据 (lat, lon) 坐标获取人类可读的地理位置描述。
     参数:
-        coords: (lat, lon) 的元组
+        coords: tuple of (lat, lon)
     返回:
-        字符串地址 或 None
+        地址字符串或 "Unknown"
     """
     try:
-        location = reverse_geocode(coords, language="en")
-        return location.address if location else None
-    except Exception:
-        return None
+        location = geolocator.reverse(coords, language="en")
+        if location and location.address:
+            return location.address
+        return "Unknown"
+    except (GeocoderUnavailable, GeocoderTimedOut):
+        return "Unknown"
