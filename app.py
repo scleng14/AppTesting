@@ -10,7 +10,7 @@ import os
 import plotly.express as px
 from emotion_utils.detector import EmotionDetector
 from location_utils.extract_gps import extract_gps_from_image
-from location_utils.landmark import detect_landmark, query_landmark_coords
+from location_utils.landmark import detect_landmark
 from location_utils.geocoder import reverse_geocode
 
 # ----------------- App Configuration -----------------
