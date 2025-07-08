@@ -52,28 +52,3 @@ def detect_landmark(image_path):
             return None
     except Exception:
         return None
-
-def query_landmark_coords(landmark_name):
-    """
-    获取 landmark 名称对应的坐标和来源
-    返回:
-        ((lat, lon), source) 或 (None, "Failed")
-    """
-    if landmark_name in LANDMARK_KEYWORDS:
-        lat = LANDMARK_KEYWORDS[landmark_name][2]
-        lon = LANDMARK_KEYWORDS[landmark_name][3]
-        return (lat, lon), "CLIP Landmark Match"
-
-    try:
-        # fallback：尝试用 OSM 查询地址
-        response = requests.get(
-            f"https://nominatim.openstreetmap.org/search?q={landmark_name}&format=json"
-        )
-        if response.ok and response.json():
-            lat = float(response.json()[0]["lat"])
-            lon = float(response.json()[0]["lon"])
-            return (lat, lon), "OSM Search"
-    except Exception:
-        pass
-
-    return None, "Failed"
