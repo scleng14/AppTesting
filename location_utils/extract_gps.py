@@ -1,43 +1,24 @@
-# extract_gps.py
 from PIL import Image, ExifTags
+from .geocoder import get_address_from_coords
 
-def extract_gps(image: Image.Image):
-    """从 PIL Image 中提取 GPS 原始信息"""
+def extract_gps_info(image_path):
+    """提取图像中的 GPS 信息（如果存在）"""
     try:
-        if not hasattr(image, '_getexif') or image._getexif() is None:
+        img = Image.open(image_path)
+        exif_data = img._getexif()
+        if not exif_data:
             return None
 
-        exif_data = image._getexif()
-        gps_info = {}
-
-        for key, val in exif_data.items():
-            tag = ExifTags.TAGS.get(key)
-            if tag == "GPSInfo":
-                for t in val:
-                    sub_tag = ExifTags.GPSTAGS.get(t)
-                    gps_info[sub_tag] = val[t]
-
-        if "GPSLatitude" in gps_info and "GPSLongitude" in gps_info:
-            lat = _convert_to_degrees(gps_info["GPSLatitude"])
-            lon = _convert_to_degrees(gps_info["GPSLongitude"])
-
-            if gps_info.get("GPSLatitudeRef") == "S":
-                lat = -lat
-            if gps_info.get("GPSLongitudeRef") == "W":
-                lon = -lon
-
-            return (lat, lon)
-        return None
+        gps_data = {}
+        for tag, value in exif_data.items():
+            decoded = ExifTags.TAGS.get(tag)
+            if decoded == "GPSInfo":
+                for t in value:
+                    sub_decoded = ExifTags.GPSTAGS.get(t)
+                    gps_data[sub_decoded] = value[t]
+        return gps_data if gps_data else None
     except Exception:
         return None
 
-def _convert_to_degrees(value):
-    """将 GPS 度/分/秒 转换为十进制度"""
-    try:
-        d, m, s = value
-        return d + m / 60.0 + s / 3600.0
-    except Exception:
-        return None
-
-def extract_gps_from_image(pil_image):
-    return extract_gps(pil_image)
+def convert_to_decimal(degree, ref):
+    """将 DMS 坐标转换为十进制度
