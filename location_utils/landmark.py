@@ -1,42 +1,20 @@
-# landmark.py
-import torch
-from PIL import Image
-from transformers import CLIPProcessor, CLIPModel
-import requests
-import json
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
 
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+# 初始化 geopy 的地理编码器（用于反向地理编码）
+geolocator = Nominatim(user_agent="location_app_gps")
+reverse_geocode = RateLimiter(geolocator.reverse, min_delay_seconds=1)
 
-landmark_list = [
-    "Petronas Twin Towers", "Kuala Lumpur Tower", "Sultan Abdul Samad Building",
-    "Malacca Christ Church", "Penang Kek Lok Si Temple", "Mount Kinabalu",
-    "Langkawi Sky Bridge", "Putra Mosque", "Batu Caves", "George Town UNESCO Site"
-]
-
-def detect_landmark(image: Image.Image):
+def get_address_from_coords(coords):
+    """
+    使用纬度和经度坐标进行反向地理编码，返回地址信息。
+    参数:
+        coords: (lat, lon) 的元组
+    返回:
+        字符串地址 或 None
+    """
     try:
-        inputs = processor(text=landmark_list, images=image, return_tensors="pt", padding=True)
-        outputs = model(**inputs)
-        logits_per_image = outputs.logits_per_image
-        probs = logits_per_image.softmax(dim=1).tolist()[0]
-        best_idx = int(torch.argmax(logits_per_image))
-        return {
-            "name": landmark_list[best_idx],
-            "score": probs[best_idx]
-        }
-    except:
-        return None
-
-def query_landmark_coords(name):
-    try:
-        url = f"https://nominatim.openstreetmap.org/search?q={name}&format=json"
-        res = requests.get(url, headers={"User-Agent": "emotion-location-app"})
-        data = res.json()
-        if data:
-            lat = float(data[0]['lat'])
-            lon = float(data[0]['lon'])
-            return (lat, lon)
-        return None
-    except:
+        location = reverse_geocode(coords, language="en")
+        return location.address if location else None
+    except Exception:
         return None
