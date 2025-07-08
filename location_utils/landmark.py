@@ -1,44 +1,58 @@
-# landmark.py
-import torch
-from transformers import CLIPProcessor, CLIPModel
-from PIL import Image
 import streamlit as st
+import torch
+from PIL import Image
+from transformers import CLIPProcessor, CLIPModel
+import requests
+import numpy as np
 
-# 地标关键字与坐标映射
-LANDMARK_KEYWORDS = {
-    "petronas towers": ("Petronas Twin Towers", "Kuala Lumpur", 3.1579, 101.7116),
-    "kl tower": ("KL Tower", "Kuala Lumpur", 3.1528, 101.7037),
-    "pyramid sunway": ("Sunway Pyramid", "Selangor", 3.0731, 101.6078),
-    "penang bridge": ("Penang Bridge", "Penang", 5.3363, 100.3076),
-    "malacca straits mosque": ("Malacca Straits Mosque", "Melaka", 2.1896, 102.2501),
-}
-
-CLIP_MODEL_NAME = "geolocal/StreetCLIP"
+CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
 CLIP_THRESHOLD = 0.6
+OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 
 @st.cache_resource
-def load_clip():
-    model = CLIPModel.from_pretrained(CLIP_MODEL_NAME)
-    processor = CLIPProcessor.from_pretrained(CLIP_MODEL_NAME)
-    return model, processor
+def load_models():
+    return (
+        CLIPModel.from_pretrained(CLIP_MODEL_NAME),
+        CLIPProcessor.from_pretrained(CLIP_MODEL_NAME),
+    )
 
-clip_model, clip_processor = load_clip()
+model, processor = load_models()
 
-def detect_landmark(image: Image.Image):
+# Example landmark list
+landmark_list = [
+    "Eiffel Tower", "Statue of Liberty", "Colosseum", "Big Ben", "KLCC", "Petronas Towers",
+    "Pyramids of Giza", "Taj Mahal", "Mount Fuji", "Burj Khalifa"
+]
+
+def detect_landmark(image):
+    if not isinstance(image, Image.Image):
+        image = Image.fromarray(image)
+
+    inputs = processor(text=landmark_list, images=image, return_tensors="pt", padding=True)
+    with torch.no_grad():
+        outputs = model(**inputs)
+        logits_per_image = outputs.logits_per_image
+        probs = logits_per_image.softmax(dim=1).numpy().flatten()
+
+    best_idx = int(np.argmax(probs))
+    if probs[best_idx] > CLIP_THRESHOLD:
+        return landmark_list[best_idx]
+    return None
+
+def query_landmark_coords(landmark_name):
+    query = f"""
+    [out:json];
+    node["name"="{landmark_name}"];
+    out center;
+    """
     try:
-        inputs = clip_processor(
-            text=list(LANDMARK_KEYWORDS.keys()),
-            images=image,
-            return_tensors="pt",
-            padding=True
-        )
-        outputs = clip_model(**inputs)
-        probs = outputs.logits_per_image.softmax(dim=1).squeeze()
-        max_prob = torch.max(probs).item()
-        if max_prob > CLIP_THRESHOLD:
-            match = list(LANDMARK_KEYWORDS.keys())[torch.argmax(probs).item()]
-            coords = LANDMARK_KEYWORDS[match][2:]
-            return coords
-        return None
+        response = requests.post(OVERPASS_URL, data=query.encode("utf-8"), timeout=30)
+        data = response.json()
+        if data.get("elements"):
+            node = data["elements"][0]
+            lat = node.get("lat") or node.get("center", {}).get("lat")
+            lon = node.get("lon") or node.get("center", {}).get("lon")
+            return (lat, lon)
     except Exception:
         return None
+    return None
