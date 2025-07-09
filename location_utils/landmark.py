@@ -37,7 +37,6 @@ def detect_landmark(image_or_path):
             text=list(LANDMARK_KEYWORDS.keys()),
             images=image,
             return_tensors="pt",
-            padding=True
         )
         outputs = clip_model(**inputs)
         probs = outputs.logits_per_image.softmax(dim=1).squeeze()
