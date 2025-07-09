@@ -45,7 +45,13 @@ def detect_landmark(image_or_path):
         if max_prob > CLIP_THRESHOLD:
             best_match_key = list(LANDMARK_KEYWORDS.keys())[torch.argmax(probs).item()]
             best_match_info = LANDMARK_KEYWORDS[best_match_key]
-            return f"{best_match_info[0]}, {best_match_info[1]}"
+            return {
+                "name": best_match_info[0],
+                "city": best_match_info[1],
+                "lat": best_match_info[2],
+                "lon": best_match_info[3],
+                "source": "Landmark"
+            }
         return None
     except Exception:
         return None
