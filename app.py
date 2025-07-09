@@ -16,7 +16,7 @@ from location_utils.geocoder import reverse_geocode
 # ----------------- App Configuration -----------------
 st.set_page_config(
     page_title="AI Emotion & Location Detector",
-    page_icon="👁‍🗨",
+    page_icon="👁‍📸",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -29,7 +29,6 @@ detector = get_detector()
 
 HISTORY_CSV = "history.csv"
 
-
 def save_history(username, emotion, confidence, location="Unknown"):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     df = pd.DataFrame([[username, emotion, confidence, location, now]],
@@ -41,7 +40,6 @@ def save_history(username, emotion, confidence, location="Unknown"):
         df.to_csv(HISTORY_CSV, index=False)
     except Exception as e:
         st.error(f"Failed to save history: {e}")
-
 
 def show_detection_guide():
     with st.expander("ℹ️ How Emotion Detection Works", expanded=False):
@@ -61,7 +59,6 @@ def show_detection_guide():
         - Avoid obstructed faces
         """)
 
-
 def sidebar_design(username):
     if username:
         st.sidebar.success(f"👤 Logged in as: {username}")
@@ -73,9 +70,8 @@ def sidebar_design(username):
     st.sidebar.divider()
     st.sidebar.info("Enhance your experience by ensuring clear, well-lit facial images.")
 
-
 def main():
-    st.title("👁‍🗨 AI Emotion & Location Detector")
+    st.title("👁‍📸 AI Emotion & Location Detector")
     st.caption("Upload a photo to detect facial emotions and estimate location.")
     tabs = st.tabs(["🏠 Home", "🗺️ Location Map", "📜 Upload History", "📊 Emotion Analysis Chart"])
 
@@ -91,7 +87,6 @@ def main():
                     detections = detector.detect_emotions(img)
                     detected_img = detector.draw_detections(img, detections)
 
-                    # Attempt GPS extraction or fallback landmark detection
                     coords = extract_gps_from_image(image)
                     if coords:
                         location = reverse_geocode(coords)
@@ -106,7 +101,7 @@ def main():
                         if detections:
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
-                            st.success(f"🎭 {len(detections)} face(s) detected")
+                            st.success(f"🌝 {len(detections)} face(s) detected")
                             for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                 st.write(f"- Face {i + 1}: {emo} ({conf}%)")
                             show_detection_guide()
@@ -183,7 +178,6 @@ def main():
                 st.error(f"Error generating chart: {e}")
         else:
             st.warning("Please enter your username to generate your emotion chart.")
-
 
 if __name__ == "__main__":
     main()
