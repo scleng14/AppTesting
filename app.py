@@ -29,17 +29,15 @@ def get_detector():
 
 detector = get_detector()
 
-HISTORY_CSV = "history.csv"
-
 def save_history(username, emotion, confidence, location):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     df = pd.DataFrame([[username, emotion, confidence, location, now]],
                      columns=["Username","Emotion","Confidence","Location","timestamp"])
     try:
-        if os.path.exists(HISTORY_CSV):
-            prev = pd.read_csv(HISTORY_CSV)
+        if os.path.exists("history.csv"):
+            prev = pd.read_csv("history.csv")
             df = pd.concat([prev, df])
-        df.to_csv(HISTORY_CSV, index=False)
+        df.to_csv("history.csv", index=False)
     except Exception as e:
         st.error(f"Failed to save history: {e}")
 
@@ -153,8 +151,8 @@ def main():
         st.subheader("📜 Upload History")
         if username:
             try:
-                if os.path.exists(HISTORY_CSV):
-                    df = pd.read_csv(HISTORY_CSV)
+                if os.path.exists("history.csv"):
+                    df = pd.read_csv("history.csv")
                     if df.empty:
                         st.info("No upload records found.")
                     else:
@@ -174,8 +172,8 @@ def main():
         st.subheader("📊 Emotion Analysis Chart")
         if username:
             try:
-                if os.path.exists(HISTORY_CSV):
-                    df = pd.read_csv(HISTORY_CSV)
+                if os.path.exists("history.csv"):
+                    df = pd.read_csv("history.csv")
                     df_filtered = df[df["Username"].str.contains(username, case=False)]
                     if not df_filtered.empty:
                         fig = px.pie(df_filtered, names="Emotion", title=f"Emotion Distribution for {username}")
