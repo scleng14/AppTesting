@@ -133,7 +133,7 @@ def main():
                 method = "Landmark" if location_text else "None"
 
             st.success("Detection completed!")
-            st.image(image, caption="Uploaded Image", use_column_width=True)
+            st.image(image, caption="Uploaded Image", use_container_width=True)
             st.markdown(f"**Detected Location:** {location_text if location_text else 'Unknown'}")
             st.markdown(f"**Detection Method:** {method}")
             st.markdown(f"**Timestamp:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
