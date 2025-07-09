@@ -1,4 +1,7 @@
-# app.py
+# app.py、
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 import streamlit as st
 import cv2
 import numpy as np
@@ -6,7 +9,6 @@ from PIL import Image
 import pandas as pd
 from datetime import datetime
 import random
-import os
 import plotly.express as px
 from emotion_utils.detector import EmotionDetector
 from location_utils.extract_gps import extract_gps_from_image
