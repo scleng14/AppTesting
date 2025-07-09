@@ -18,7 +18,7 @@ def extract_gps_from_image(image: Image.Image):
         if "GPSLatitude" in gps_info and "GPSLongitude" in gps_info:
             lat = convert_to_degrees(gps_info["GPSLatitude"], gps_info.get("GPSLatitudeRef", "N"))
             lon = convert_to_degrees(gps_info["GPSLongitude"], gps_info.get("GPSLongitudeRef", "E"))
-            return (lat, long), "GPS"
+            return (lat, lon), "GPS"
         else:
             return None
 
