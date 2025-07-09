@@ -87,15 +87,15 @@ def main():
                     detections = detector.detect_emotions(img)
                     detected_img = detector.draw_detections(img, detections)
 
-                    coords = extract_gps_from_image(image)
+                    coords, method = extract_gps_from_image(image)
                     location_display = "Unknown"
-
                     if coords:
                         location_display = reverse_geocode(coords)
                     else:
                         landmark_info = detect_landmark(image)
                         if landmark_info:
                             location_display = f"{landmark_info['name']}, {landmark_info['city']}"
+                            method = "Landmark"
 
                     st.session_state["uploaded_image"] = uploaded_file
 
@@ -129,18 +129,20 @@ def main():
         if "uploaded_image" in st.session_state:
             loc_file = st.session_state["uploaded_image"]
             image = Image.open(loc_file)
-            coords = extract_gps_from_image(image)
+            coords, method = extract_gps_from_image(image)
+            location_text = "Unknown"
             if coords:
                 location_text = reverse_geocode(coords)
-                method = "GPS"
             else:
-                location_text = detect_landmark(image)
-                method = "Landmark" if location_text else "None"
+                landmark_info = detect_landmark(image)
+                if landmark_info:
+                    location_text = f"{landmark_info['name']}, {landmark_info['city']}"
+                    method = "Landmark"
 
             st.success("Detection completed!")
             st.image(image, caption="Uploaded Image", use_column_width=True)
-            st.markdown(f"**Detected Location:** {location_text if location_text else 'Unknown'}")
-            st.markdown(f"**Detection Method:** {method}")
+            st.markdown(f"**Detected Location:** {location_text}")
+            st.markdown(f"**Detection Method:** {method if method else 'Unknown'}")
             st.markdown(f"**Timestamp:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         else:
             st.info("No image found. Please upload an image in the Home tab first.")
