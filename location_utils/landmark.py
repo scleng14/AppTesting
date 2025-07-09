@@ -20,8 +20,9 @@ CLIP_THRESHOLD = 0.6
 
 @st.cache_resource
 def load_clip_model():
-    model = CLIPModel.from_pretrained(CLIP_MODEL_NAME)
-    processor = CLIPProcessor.from_pretrained(CLIP_MODEL_NAME)
+    from transformers import CLIPModel, CLIPProcessor
+    model = CLIPModel.from_pretrained("geolocal/StreetCLIP")
+    processor = CLIPProcessor.from_pretrained("geolocal/StreetCLIP")
     return model, processor
 
 clip_model, clip_processor = load_clip_model()
