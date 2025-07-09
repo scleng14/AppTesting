@@ -28,6 +28,7 @@ def load_clip_model():
 clip_model, clip_processor = load_clip_model()
 
 def detect_landmark(image_or_path):
+    clip_model, clip_processor = load_clip_model()
     try:
         if isinstance(image_or_path, str):
             image = Image.open(image_or_path).convert("RGB")
