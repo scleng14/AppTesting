@@ -29,10 +29,10 @@ detector = get_detector()
 
 HISTORY_CSV = "history.csv"
 
-def save_history(username, emotion, confidence, location):
+def save_history(username, emotion, confidence, location, lat=None, lon=None, method="Unknown"):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    df = pd.DataFrame([[username, emotion, confidence, location, now]],
-                     columns=["Username","Emotion","Confidence","Location","timestamp"])
+    df = pd.DataFrame([[username, emotion, confidence, location, lat, lon, method, now]],
+                     columns=["Username","Emotion","Confidence","Location","Latitude","Longitude","Method","timestamp"])
     try:
         if os.path.exists(HISTORY_CSV):
             prev = pd.read_csv(HISTORY_CSV)
