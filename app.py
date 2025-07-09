@@ -16,7 +16,7 @@ from location_utils.geocoder import reverse_geocode
 # ----------------- App Configuration -----------------
 st.set_page_config(
     page_title="AI Emotion & Location Detector",
-    page_icon="👁‍📸",
+    page_icon="👁‍🗨",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -29,14 +29,14 @@ detector = get_detector()
 
 HISTORY_CSV = "history.csv"
 
-def save_history(username, emotion, confidence, location="Unknown"):
+def save_history(username, emotion, confidence, location):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     df = pd.DataFrame([[username, emotion, confidence, location, now]],
                      columns=["Username","Emotion","Confidence","Location","timestamp"])
     try:
         if os.path.exists(HISTORY_CSV):
             prev = pd.read_csv(HISTORY_CSV)
-            df = pd.concat([prev, df], ignore_index=True)
+            df = pd.concat([prev, df])
         df.to_csv(HISTORY_CSV, index=False)
     except Exception as e:
         st.error(f"Failed to save history: {e}")
@@ -71,7 +71,7 @@ def sidebar_design(username):
     st.sidebar.info("Enhance your experience by ensuring clear, well-lit facial images.")
 
 def main():
-    st.title("👁‍📸 AI Emotion & Location Detector")
+    st.title("👁‍🗨 AI Emotion & Location Detector")
     st.caption("Upload a photo to detect facial emotions and estimate location.")
     tabs = st.tabs(["🏠 Home", "🗺️ Location Map", "📜 Upload History", "📊 Emotion Analysis Chart"])
 
@@ -101,7 +101,7 @@ def main():
                         if detections:
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
-                            st.success(f"🌝 {len(detections)} face(s) detected")
+                            st.success(f"🎭 {len(detections)} face(s) detected")
                             for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                 st.write(f"- Face {i + 1}: {emo} ({conf}%)")
                             show_detection_guide()
@@ -121,9 +121,8 @@ def main():
 
     with tabs[1]:
         st.header("📍 Location Detection")
-        loc_file = st.file_uploader("Upload an image for location detection", type=["jpg", "jpeg", "png"], key="loc")
-        if loc_file is not None:
-            image = Image.open(loc_file)
+        if uploaded_file is not None:
+            image = Image.open(uploaded_file)
             coords = extract_gps_from_image(image)
             if coords:
                 location_text = reverse_geocode(coords)
