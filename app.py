@@ -88,12 +88,14 @@ def main():
                     detected_img = detector.draw_detections(img, detections)
 
                     coords = extract_gps_from_image(image)
+                    location_display = "Unknown"
+
                     if coords:
-                        location = reverse_geocode(coords)
+                        location_display = reverse_geocode(coords)
                     else:
-                        location = detect_landmark(image)
-                    if not location:
-                        location = "Unknown"
+                        landmark_info = detect_landmark(image)
+                        if landmark_info:
+                            location_display = f"{landmark_info['name']}, {landmark_info['city']}"
 
                     st.session_state["uploaded_image"] = uploaded_file
 
@@ -107,8 +109,8 @@ def main():
                             for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                 st.write(f"- Face {i + 1}: {emo} ({conf}%)")
                             show_detection_guide()
-                            save_history(username, emotions[0], confidences[0], location)
-                            st.info(f"📍 Location: {location}")
+                            save_history(username, emotions[0], confidences[0], location_display)
+                            st.info(f"📍 Location: {location_display}")
                         else:
                             st.warning("No faces were detected in the uploaded image.")
                     with col2:
