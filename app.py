@@ -81,6 +81,7 @@ def main():
         if username:
             uploaded_file = st.file_uploader("Upload an image (JPG/PNG)", type=["jpg", "png"])
             if uploaded_file:
+                st.session_state["uploaded_image"] = uploaded_file
                 try:
                     image = Image.open(uploaded_file)
                     img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
@@ -120,22 +121,27 @@ def main():
                     st.error(f"Error while processing the image: {e}")
 
     with tabs[1]:
-        st.header("📍 Location Detection")
-        if uploaded_file is not None:
-            image = Image.open(uploaded_file)
-            coords = extract_gps_from_image(image)
-            if coords:
-                location_text = reverse_geocode(coords)
-                method = "GPS"
-            else:
-                location_text = detect_landmark(image)
-                method = "Landmark" if location_text else "None"
+    st.header("📍 Location Detection")
 
-            st.success("Detection completed!")
-            st.image(image, caption="Uploaded Image", use_container_width=True)
-            st.markdown(f"**Detected Location:** {location_text if location_text else 'Unknown'}")
-            st.markdown(f"**Detection Method:** {method}")
-            st.markdown(f"**Timestamp:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    if "uploaded_image" in st.session_state:
+        loc_file = st.session_state["uploaded_image"]
+        image = Image.open(loc_file)
+        coords = extract_gps_from_image(image)
+        if coords:
+            location_text = reverse_geocode(coords)
+            method = "GPS"
+        else:
+            location_text = detect_landmark(image)
+            method = "Landmark" if location_text else "None"
+
+        st.success("Detection completed!")
+        st.image(image, caption="Uploaded Image", use_column_width=True)
+        st.markdown(f"**Detected Location:** {location_text if location_text else 'Unknown'}")
+        st.markdown(f"**Detection Method:** {method}")
+        st.markdown(f"**Timestamp:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    else:
+        st.info("No image found. Please upload an image in the Home tab first.")
+
 
     with tabs[2]:
         st.subheader("📜 Upload History")
