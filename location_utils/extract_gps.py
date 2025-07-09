@@ -1,7 +1,6 @@
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 
-
 def extract_gps_from_image(image: Image.Image):
     try:
         exif_data = image._getexif()
@@ -19,20 +18,21 @@ def extract_gps_from_image(image: Image.Image):
         if "GPSLatitude" in gps_info and "GPSLongitude" in gps_info:
             lat = convert_to_degrees(gps_info["GPSLatitude"], gps_info.get("GPSLatitudeRef", "N"))
             lon = convert_to_degrees(gps_info["GPSLongitude"], gps_info.get("GPSLongitudeRef", "E"))
-            return lat, lon
+            return (lat, lon)
         else:
             return None
 
     except Exception as e:
         return None
 
-
 def convert_to_degrees(value, ref):
-    d = float(value[0][0]) / float(value[0][1])
-    m = float(value[1][0]) / float(value[1][1])
-    s = float(value[2][0]) / float(value[2][1])
-
-    degrees = d + (m / 60.0) + (s / 3600.0)
-    if ref in ['S', 'W']:
-        degrees = -degrees
-    return degrees
+    try:
+        d = float(value[0][0]) / float(value[0][1])
+        m = float(value[1][0]) / float(value[1][1])
+        s = float(value[2][0]) / float(value[2][1])
+        degrees = d + (m / 60.0) + (s / 3600.0)
+        if ref in ['S', 'W']:
+            degrees = -degrees
+        return round(degrees, 6)
+    except:
+        return None
