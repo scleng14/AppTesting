@@ -1,7 +1,5 @@
 # app.py
 import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
 import streamlit as st
 import cv2
 import numpy as np
