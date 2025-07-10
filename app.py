@@ -1,17 +1,25 @@
-# app.py
-import os
-import streamlit as st
+import os, streamlit as st
+st.write("🚀 Root files:", os.listdir("."))
+import sys, subprocess
+st.write("📦 Installed packages:")
+freeze = subprocess.check_output([sys.executable, "-m", "pip", "freeze"]).decode().splitlines()
+cv_pkgs = [p for p in freeze if "opencv" in p.lower()]
+st.write(cv_pkgs)
 import cv2
+st.write("✅ cv2 loaded, version:", cv2.__version__)
 import numpy as np
 from PIL import Image
 import pandas as pd
 from datetime import datetime
 import random
+import os
 import plotly.express as px
 from emotion_utils.detector import EmotionDetector
-from location_utils.extract_gps import extract_gps_from_image
-from location_utils.landmark import detect_landmark
-from location_utils.geocoder import reverse_geocode
+import tempfile
+from location_utils.extract_gps import extract_gps, convert_gps
+from location_utils.geocoder import get_address_from_coords
+from location_utils.landmark import load_models,detect_landmark, query_landmark_coords,LANDMARK_KEYWORDS
+
 
 # ----------------- App Configuration -----------------
 st.set_page_config(
@@ -29,7 +37,7 @@ detector = get_detector()
 
 def save_history(username, emotion, confidence, location):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    df = pd.DataFrame([[username, emotion, confidence, location, now]],
+    df = pd.DataFrame([[username, emotion, confidence, location, now]], 
                      columns=["Username","Emotion","Confidence","Location","timestamp"])
     try:
         if os.path.exists("history.csv"):
@@ -67,7 +75,7 @@ def sidebar_design(username):
     st.sidebar.markdown("- Visualize your emotion distribution")
     st.sidebar.divider()
     st.sidebar.info("Enhance your experience by ensuring clear, well-lit facial images.")
-
+  
 def main():
     st.title("👁‍🗨 AI Emotion & Location Detector")
     st.caption("Upload a photo to detect facial emotions and estimate location.")
@@ -79,71 +87,101 @@ def main():
         if username:
             uploaded_file = st.file_uploader("Upload an image (JPG/PNG)", type=["jpg", "png"])
             if uploaded_file:
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_file:
+                    tmp_file.write(uploaded_file.read())
+                    temp_path = tmp_file.name
+               
                 try:
-                    image = Image.open(uploaded_file)
+                    # 调试信息
+                    print(f"[MAIN] Processing image: {uploaded_file.name}")
+                    print(f"[MAIN] Image size: {uploaded_file.size} bytes")
+                    
+                    image = Image.open(temp_path).convert("RGB")
                     img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
                     detections = detector.detect_emotions(img)
                     detected_img = detector.draw_detections(img, detections)
-
-                    coords, method = extract_gps_from_image(image)
-                    location_display = "Unknown"
-                    if coords:
-                        location_display = reverse_geocode(coords)
-                    else:
-                        landmark_info = detect_landmark(image)
-                        if landmark_info:
-                            location_display = f"{landmark_info['name']}, {landmark_info['city']}"
-                            method = "Landmark"
-
-                    st.session_state["uploaded_image"] = uploaded_file
-
-                    col1, col2 = st.columns([1, 2])
-                    with col1:
-                        st.subheader("🔍 Detection Results")
-                        if detections:
-                            emotions = [d["emotion"] for d in detections]
-                            confidences = [d["confidence"] for d in detections]
-                            st.success(f"🎭 {len(detections)} face(s) detected")
-                            for i, (emo, conf) in enumerate(zip(emotions, confidences)):
-                                st.write(f"- Face {i + 1}: {emo} ({conf}%)")
-                            show_detection_guide()
-                            save_history(username, emotions[0], confidences[0], location_display)
-                            st.info(f"📍 Location: {location_display}")
+                        
+                    location = "Unknown"
+                    method = ""
+                    gps_info = extract_gps(temp_path)
+                
+                    if gps_info:
+                        print(f"[MAIN] GPS extraction successful: {list(gps_info.keys())}")
+                        coords = convert_gps(gps_info)
+   
+                        if coords:
+                            print(f"[MAIN] GPS coordinates: {coords}")
+                            location = get_address_from_coords(coords)
+                            method="GPS Metadata"
                         else:
-                            st.warning("No faces were detected in the uploaded image.")
-                    with col2:
-                        t1, t2 = st.tabs(["Original Image", "Processed Image"])
-                        with t1:
-                            st.image(image, use_container_width=True)
-                        with t2:
-                            st.image(detected_img, channels="BGR", use_container_width=True,
-                                     caption=f"Detected {len(detections)} face(s)")
+                            print("[MAIN] No GPS data found in image")
+                                
+                    if location in ("Unknown", "Unknown location"):
+                        print("[MAIN] Trying landmark detection...")
+                        landmark = detect_landmark(temp_path, threshold=0.15, top_k=5)
+                        
+                        if landmark:
+                            print(f"[MAIN] CLIP predicted landmark: {landmark}")
+                            st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
+                            
+                            coords_result, source = query_landmark_coords(landmark)
+                            
+                            if coords_result:
+                                lat, lon = coords_result
+                                print(f"[MAIN] Landmark coordinates: {lat}, {lon} (source: {source})")
+                                addr = get_address_from_coords((lat, lon))
+                                if addr and addr not in ("Unknown location", "Invalid coordinates", "Geocoding service unavailable"):
+                                    location = addr
+                                    method = f"Landmark ({source})"
+                                    print(f"[MAIN] Final location: {location}")
+                                else:
+                                    if landmark in LANDMARK_KEYWORDS:
+                                        landmark_info = LANDMARK_KEYWORDS[landmark]
+                                        location = f"{landmark_info[0]}, {landmark_info[1]}"
+                                    else:
+                                        location = f"{landmark.title()} ({lat:.4f}, {lon:.4f})"
+                                        method = f"Landmark ({source})"
+                                        print(f"[MAIN] Using landmark fallback: {location}")
+                            else:
+                                print(f"[MAIN] No coordinates found for landmark: {landmark}")
+                                st.write(f"⚠️ Landmark detected but no coordinates available")
+                        else:
+                            print("[MAIN] No landmark detected with sufficient confidence")
+                            st.write("🔍 No landmark detected with sufficient confidence")
                 except Exception as e:
-                    st.error(f"Error while processing the image: {e}")
+                    st.error(f"❌ Something went wrong during processing: {e}")
+                    print(f"[ERROR] {e}")
+                                   
+                col1, col2 = st.columns([1, 2])
+                with col1:
+                    st.subheader("🔍 Detection Results")
+                    if detections:
+                        emotions = [d["emotion"] for d in detections]
+                        confidences = [d["confidence"] for d in detections]
+                        st.success(f"🎭 {len(detections)} face(s) detected")
+                        for i, (emo, conf) in enumerate(zip(emotions, confidences)):
+                            st.write(f"- Face {i + 1}: {emo} ({conf}%)")
+                        show_detection_guide()
+                        st.write(f"📍 Estimated Location: **{location}** ({method})")
+                        save_history(username, emotions[0], confidences[0], location)
+                    else:
+                        st.warning("No faces were detected in the uploaded image.")
+                with col2:
+                    t1, t2 = st.tabs(["Original Image", "Processed Image"])
+                    with t1:
+                         st.image(image, use_container_width=True)
+                    with t2:
+                        st.image(detected_img, channels="BGR", use_container_width=True,
+                                    caption=f"Detected {len(detections)} face(s)")
+               
 
     with tabs[1]:
-        st.header("📍 Location Detection")
-
-        if "uploaded_image" in st.session_state:
-            loc_file = st.session_state["uploaded_image"]
-            image = Image.open(loc_file)
-            coords, method = extract_gps_from_image(image)
-            location_text = "Unknown"
-            if coords:
-                location_text = reverse_geocode(coords)
-            else:
-                landmark_info = detect_landmark(image)
-                if landmark_info:
-                    location_text = f"{landmark_info['name']}, {landmark_info['city']}"
-                    method = "Landmark"
-
-            st.success("Detection completed!")
-            st.image(image, caption="Uploaded Image", use_column_width=True)
-            st.markdown(f"**Detected Location:** {location_text}")
-            st.markdown(f"**Detection Method:** {method if method else 'Unknown'}")
-            st.markdown(f"**Timestamp:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        else:
-            st.info("No image found. Please upload an image in the Home tab first.")
+        st.subheader("🗺️ Random Location Sample (Demo)")
+        st.map(pd.DataFrame({
+            'lat': [3.139 + random.uniform(-0.01, 0.01)],
+            'lon': [101.6869 + random.uniform(-0.01, 0.01)]
+        }))
+        st.caption("Note: This location map is a demo preview and not actual detected GPS data.")
 
     with tabs[2]:
         st.subheader("📜 Upload History")
@@ -155,7 +193,7 @@ def main():
                         st.info("No upload records found.")
                     else:
                         df_filtered = df[df["Username"].str.contains(username, case=False)]
-                        df_filtered = df_filtered.sort_values("timestamp", ascending=False).tail(100).reset_index(drop=True)
+                        df_filtered = df_filtered.sort_values("timestamp", ascending=False).reset_index(drop=True)
                         df_filtered.index = range(1, len(df_filtered)+1)
                         st.dataframe(df_filtered)
                         st.caption(f"Total records found for {username}: {len(df_filtered)}")
