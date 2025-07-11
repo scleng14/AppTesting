@@ -6,7 +6,6 @@ from PIL import Image
 import pandas as pd
 from datetime import datetime
 import random
-import os
 import plotly.express as px
 from emotion_utils.detector import EmotionDetector
 import hashlib
@@ -400,7 +399,7 @@ def main_app():
                             st.write(
                                 f"📍 Estimated Location: **{location}** ({method})"
                             )
-                            save_history(username, emotions, confidences, "Unknown")
+                            save_history(username, emotions, confidences, location)
                         else:
                             st.warning("No faces were detected in the uploaded image.")
                     with col2:
@@ -410,18 +409,16 @@ def main_app():
                         with t2:
                             st.image(detected_img, channels="BGR", use_container_width=True,
                                     caption=f"Detected {len(detections)} {face_word}")
-                except Exception as e:
-                    st.error(f"Error while processing the image: {e}")
 
         with tabs[1]:
-        st.subheader("🗺️ Detected Location Map")
-        if coords_result:
-            lat, lon = coords_result
-            map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
-            st.map(map_df)
-            st.caption(f"Source: {method}")
-        else:
-            st.info("No detected location to display on map.")
+            st.subheader("🗺️ Detected Location Map")
+            if coords_result:
+                lat, lon = coords_result
+                map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
+                st.map(map_df)
+                st.caption(f"Source: {method}")
+            else:
+                st.info("No detected location to display on map.")
             
 # ----------------- Run App -----------------
 if __name__ == "__main__":
