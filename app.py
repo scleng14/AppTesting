@@ -107,11 +107,7 @@ def show_detection_guide():
         
 def gradient_card(subtitle):
     if subtitle:
-        subtitle_html = f""
-            <p style="color: #333; font-size: 1.2rem;">
-                {subtitle}
-            </p>
-        ""
+        subtitle_html = f'<p style="color: #333; font-size: 1.2rem;">{subtitle}</p>'
     else:
         subtitle_html = "" 
 
