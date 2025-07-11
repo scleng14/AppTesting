@@ -406,8 +406,24 @@ def main_app():
                         if detections:
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
-                            
-                            with st.expander(f"🎭 {len(detections)} {face_word} detected"):
+
+                            st.markdown("### 🔍 <b>Per-Face Emotion Details</b>", unsafe_allow_html=True)
+                            wwith st.expander("Click to expand details"):
+                                for i, (emo, conf) in enumerate(zip(emotions, confidences)):
+                                    st.markdown(f"""
+                                        <div style="padding-left: 10px; margin-bottom: 8px;">
+                                            <strong>Face {i + 1}</strong>: {emo.title()}  
+                                            <br>Confidence: {conf:.1f}%
+                                        </div>
+                                    """, unsafe_allow_html=True)
+
+
+
+
+
+
+
+
                                 for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                     st.write(f"- Face {i + 1}: {emo} ({conf}%)")
 
@@ -418,15 +434,11 @@ def main_app():
                             total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
                             st.write(total_text)
 
-
-
-
-                            
-                            show_detection_guide()
                             method = st.session_state.get("location_method", "")
                             st.write(
                                 f"📍 Estimated Location: **{location}** "
                             )
+                            show_detection_guide()
                             save_history(username, emotions, confidences, location)
                         else:
                             st.warning("No faces were detected in the uploaded image.")
