@@ -312,23 +312,6 @@ def main_app():
     if "location_method" not in st.session_state:
         st.session_state.location_method = ""
 
-    
-    st.markdown("""
-        <div style="
-            background: #f0f0f3;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 
-                8px 8px 16px #d1d9e6,
-                -8px -8px 16px #ffffff;
-            text-align: center;
-            margin-bottom: 2rem;
-        ">
-            <h1 style="font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
-            <p style="font-size: 1.2rem;">AI-powered Face Emotion & Location Recognition</p>
-        </div>
-    """, unsafe_allow_html=True)
-
     st.markdown("""
         <div style="
             background: linear-gradient(135deg, #fef9ff, #e7e7f9);
@@ -339,28 +322,9 @@ def main_app():
             border: 1px solid #ddd;
         ">
             <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
-            <p style="color: #333; font-size: 1.2rem;">AI-powered Face Emotion & Location Recognition</p>
+            <p style="color: #333; font-size: 1.2rem;">Upload a photo to detect facial emotions and estimate location.</p>
         </div>
     """, unsafe_allow_html=True)
-
-    st.markdown("""
-        <div style="
-            background: #1e1e1e;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            border: 1px solid #333;
-        ">
-            <h1 style="color: #fefefe; font-size: 2.6rem;">👁‍🗨 Perspēct</h1>
-            <p style="color: #cccccc; font-size: 1.1rem;">AI-powered Face Emotion & Location Recognition</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-
-
-
-
     
     # Show history if toggled, otherwise show regular tabs
     if st.session_state.get('show_history', False):
