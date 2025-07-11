@@ -331,11 +331,13 @@ def main_app():
                 try:
                     image = Image.open(uploaded_file).convert("RGB")
                     img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+                    detector = EmotionDetector()
                     detections = detector.detect_emotions(img)
                     detected_img = detector.draw_detections(img, detections)
 
                     location = "Unknown"
                     coords = None
+                    face_word = "face" if len(detections) == 1 else "faces"
 
                     # 1) Try EXIF GPS
                     gps_info = extract_gps(temp_path)
@@ -374,7 +376,8 @@ def main_app():
                 except Exception as e:
                     st.error(f"❌ Something went wrong during processing: {e}")
 
-                    # Display detection results
+                # Display detection results
+                if detections:
                     col1, col2 = st.columns([1, 2])
                     with col1:
                         st.subheader("🔍 Detection Results")
@@ -382,10 +385,7 @@ def main_app():
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
                             
-                            # Correct pluralization
-                            face_word = "face" if len(detections) == 1 else "faces"
                             st.success(f"🎭 {len(detections)} {face_word} detected")
-                            
                             for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                 st.write(f"- Face {i + 1}: {emo} ({conf}%)")
                             
@@ -411,7 +411,10 @@ def main_app():
                         with t2:
                             st.image(detected_img, channels="BGR", use_container_width=True,
                                     caption=f"Detected {len(detections)} {face_word}")
-                finally:
+                else:
+                    st.warning("No faces were detected in the uploaded image.")
+
+                    # Cleanup temp file
                     if os.path.exists(temp_path):
                         os.remove(temp_path)
 
