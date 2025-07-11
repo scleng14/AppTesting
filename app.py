@@ -403,7 +403,7 @@ def main_app():
                             show_detection_guide()
                             method = st.session_state.get("location_method", "")
                             st.write(
-                                f"📍 Estimated Location: **{location}** ({method})"
+                                f"📍 Estimated Location: **{location}** "
                             )
                             save_history(username, emotions, confidences, location)
                         else:
