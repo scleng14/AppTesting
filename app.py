@@ -116,9 +116,9 @@ def sidebar_design(username):
     st.sidebar.markdown("- Upload and detect emotions")
     st.sidebar.markdown("- View location map")
     st.sidebar.divider()
-
     st.sidebar.info("Enhance your experience by ensuring clear, well-lit facial images.")
     st.sidebar.divider()
+    
      # History button moved here
     if username:
         if st.sidebar.button("📜 History", key="history_button"):
@@ -304,12 +304,13 @@ def signup_page():
 
 # ----------------- Main App -----------------
 def main_app():
-    # Initialize variables for sharing across tabs
-    coords_result = None
-    method = ""
-    
     username = st.session_state.get("username", "")
     sidebar_design(username)
+
+    if "coords_result" not in st.session_state:
+        st.session_state.coords_result = None
+    if "location_method" not in st.session_state:
+        st.session_state.location_method = ""
     
     st.title("👁‍🗨 Perspēct")
     st.caption("Upload a photo to detect facial emotions and estimate location.")
@@ -341,9 +342,10 @@ def main_app():
                     if gps_info:
                         coords = convert_gps(gps_info)
                         if coords:
-                            coords_result = coords
                             location = get_address_from_coords(coords)
-                            method = "GPS Metadata"
+                            st.session_state.coords_result = coords
+                            st.session_state.location_method = "GPS Metadata"
+
                             
                     # 2) Fallback to CLIP landmark
                     if coords_result is None:
