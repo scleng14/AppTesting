@@ -86,7 +86,7 @@ def save_history(username, emotions, confidences, location):
         df.to_csv("history.csv", index=False)
     except Exception as e:
         st.error(f"Failed to save history: {e}")
-
+#————————————————————————————————————————————————————————————————————————————————————
 def show_detection_guide():
     with st.expander("ℹ️ How Emotion Detection Works", expanded=False):
         st.markdown("""
@@ -149,7 +149,6 @@ def sidebar_design(username):
         - Ensure good lighting
         - Avoid obstructed faces
         """)
-    st.sidebar.divider()
     st.sidebar.info("Enhance your experience by ensuring clear, well-lit facial images.")
     st.sidebar.divider()
     
