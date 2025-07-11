@@ -421,12 +421,13 @@ def main_app():
                                             <br>Confidence: {conf:.1f}%
                                         </div>
                                     """, unsafe_allow_html=True)
-
+                                st.expander.divider()
                                 total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
                                 st.write(total_text)
-
+                                
+                            st.expander.divider()
                             method = st.session_state.get("location_method", "")
-                            st.write(
+                            st.success(
                                 f"📍 Estimated Location: **{location}** "
                             )
                             show_detection_guide()
