@@ -213,7 +213,7 @@ def show_user_history(username):
                     # Add spacing between table and chart
                     st.markdown("<br><br>", unsafe_allow_html=True)
                     st.markdown("**📊 Emotion Distribution**")
-                    
+                                                                                                                                                                                                                                                            
                     # Create columns for the selection and chart
                     col_select, col_chart = st.columns([2, 5])
                     
@@ -311,23 +311,25 @@ def main_app():
         st.session_state.coords_result = None
     if "location_method" not in st.session_state:
         st.session_state.location_method = ""
+
     
     st.markdown("""
     <div style="
-        background: white;
-        border-radius: 18px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.15));
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.3);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
         padding: 2rem;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         text-align: center;
-        border: 1px solid #eee;
         margin-bottom: 2rem;
     ">
-        <h1 style="color: #222; font-size: 2.8rem; margin-bottom: 0.5rem;">👁‍🗨 Perspēct</h1>
-        <p style="color: #555; font-size: 1.2rem; font-weight: 400;">
-            AI-powered Face Emotion & Location Recognition
-        </p>
+        <h1 style="color: #222; font-size: 2.7rem;">👁‍🗨 Perspēct</h1>
+        <p style="color: #333; font-size: 1.15rem;">AI-powered Face Emotion & Location Recognition</p>
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
