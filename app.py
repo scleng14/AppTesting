@@ -313,11 +313,20 @@ def main_app():
         st.session_state.location_method = ""
     
     st.markdown("""
-    <div style="text-align: center;">
-        <h1>👁‍🗨 Perspēct</h1>
-        <p style="font-size: 1.1rem;">Upload a photo to detect facial emotions and estimate location.</p>
+    <div style="
+        background-color: #f8f8e7;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    ">
+        <h1 style="color: #333333; font-family: 'Segoe UI', sans-serif;">👁‍🗨 Perspēct</h1>
+        <p style="font-size: 1.1rem; color: #555555; font-family: 'Segoe UI', sans-serif;">
+            Upload a photo to detect facial emotions and estimate location.
+        </p>
     </div>
     """, unsafe_allow_html=True)
+
     
     # Show history if toggled, otherwise show regular tabs
     if st.session_state.get('show_history', False):
