@@ -345,7 +345,7 @@ def main_app():
         </div>
     """, unsafe_allow_html=True)
 
-        st.markdown("""
+    st.markdown("""
         <div style="
             background: #f0f0f3;
             border-radius: 20px;
