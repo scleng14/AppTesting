@@ -317,11 +317,12 @@ def main_app():
     st.markdown("""
         <div style="
             background: linear-gradient(135deg, #fef9ff, #e7e7f9);
-            border-radius: 20px;
+            border-radius: 18px;
             padding: 2rem;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
             text-align: center;
             border: 1px solid #ddd;
+            margin-bottom: 2rem;
         ">
             <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
             <p style="color: #333; font-size: 1.2rem;">Upload a photo to detect facial emotions and estimate location.</p>
