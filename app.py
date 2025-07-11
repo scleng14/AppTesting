@@ -348,7 +348,7 @@ def main_app():
 
                             
                     # 2) Fallback to CLIP landmark
-                    if coords_result is None:
+                    if st.session_state.coords_result is None:
                         landmark = detect_landmark(temp_path, threshold=0.15, top_k=5)
                         if landmark:
                             st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
