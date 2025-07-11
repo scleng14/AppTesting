@@ -414,7 +414,7 @@ def main_app():
                     st.error(f"Error while processing the image: {e}")
 
         with tabs[1]:
-        st.subheader("🗺️ Location Map")
+        st.subheader("🗺️ Detected Location Map")
         if coords_result:
             lat, lon = coords_result
             map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
