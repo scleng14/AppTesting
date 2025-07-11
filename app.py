@@ -429,9 +429,7 @@ def main_app():
                                 
                             st.divider()
                             method = st.session_state.get("location_method", "")
-                            st.success(
-                                f"📍 Estimated Location: **{location}** "
-                            )
+                            st.success(f"📍 Estimated Location: **{location}** ")
                             show_detection_guide()
                             save_history(username, emotions, confidences, location)
                         else:
