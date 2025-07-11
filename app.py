@@ -407,7 +407,7 @@ def main_app():
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
                             
-                            with st.success.expander(f"🎭 {len(detections)} {face_word} detected"):
+                            with st.expander(f"🎭 {len(detections)} {face_word} detected"):
                                 for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                     st.write(f"- Face {i + 1}: {emo} ({conf}%)")
 
