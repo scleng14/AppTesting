@@ -328,21 +328,19 @@ def main_app():
             <p style="color: #333; font-size: 1.2rem;">Upload a photo to detect facial emotions and estimate location.</p>
         </div>
     """, unsafe_allow_html=True)
-
-    def gradient_card(title, content):
-        return f"""
-            <div style="
-                background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
-                padding: 1.2rem 1.5rem;
-                border-radius: 16px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                margin-top: 1rem;
-                margin-bottom: 1rem;
-            ">
-                <h4 style="color: white; margin-bottom: 0.5rem;">{title}</h4>
-                <p style="color: #fff;">Upload a photo to detect facial emotions and estimate location.</p>
-            </div>
-        """
+    st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        ">
+            <h4 style="color: white; margin-bottom: 0.5rem;">{title}</h4>
+            <p style="color: #fff;">Upload a photo to detect facial emotions and estimate location.</p>
+        </div>
+    """, unsafe_allow_html=True)
 
     
     # Show history if toggled, otherwise show regular tabs
