@@ -133,9 +133,7 @@ def sidebar_design(username):
     
     # Make all sidebar sections consistent in length
     st.sidebar.markdown("---")
-    st.sidebar.markdown("## Quick Navigation")
-    st.sidebar.markdown("- Upload and detect emotions")
-    st.sidebar.markdown("- View location map")
+    show_detection_guide()
     st.sidebar.divider()
     st.sidebar.info("Enhance your experience by ensuring clear, well-lit facial images.")
     st.sidebar.divider()
@@ -407,7 +405,7 @@ def main_app():
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
                             
-                            st.success(f"🎭 ****{len(detections)}**** {face_word} Detected")
+                            st.success(f"🎭 **{len(detections)}** {face_word} Detected")
 
                             # Add emotion totals
                             emotion_counts = {}
@@ -430,7 +428,6 @@ def main_app():
                             st.divider()
                             method = st.session_state.get("location_method", "")
                             st.success(f"📍 Estimated Location: **{location}** ")
-                            show_detection_guide()
                             save_history(username, emotions, confidences, location)
                         else:
                             st.warning("No faces were detected in the uploaded image.")
