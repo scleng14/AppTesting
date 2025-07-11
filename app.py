@@ -314,20 +314,67 @@ def main_app():
 
     
     st.markdown("""
-    <div style="
-        background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.15));
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 20px;
-        border: 1px solid rgba(255,255,255,0.3);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-        padding: 2rem;
-        text-align: center;
-        margin-bottom: 2rem;
-    ">
-        <h1 style="color: #222; font-size: 2.7rem;">👁‍🗨 Perspēct</h1>
-        <p style="color: #333; font-size: 1.15rem;">AI-powered Face Emotion & Location Recognition</p>
-    </div>
+        <div style="
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.15));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        ">
+            <h1 style="color: #222; font-size: 2.7rem;">👁‍🗨 Perspēct</h1>
+            <p style="color: #333; font-size: 1.15rem;">AI-powered Face Emotion & Location Recognition</p>
+        </div>
+     """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <div style="
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 18px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 2rem;
+        ">
+            <h1 style="font-size: 2.6rem; font-weight: 600; color: #222;">👁‍🗨 Perspēct</h1>
+            <p style="font-size: 1.1rem; color: #444;">AI-powered Face Emotion & Location Recognition</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.15));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        ">
+            <h1 style="color: #222; font-size: 2.7rem;">👁‍🗨 Perspēct</h1>
+            <p style="color: #333; font-size: 1.15rem;">AI-powered Face Emotion & Location Recognition</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <div style="
+            background-color: #f8f9fa;
+            border-radius: 14px;
+            padding: 1.5rem;
+            border: 1px solid #e3e3e3;
+            text-align: center;
+            margin-bottom: 2rem;
+        ">
+            <h1 style="font-size: 2.5rem; color: #222;">👁‍🗨 Perspēct</h1>
+            <p style="font-size: 1.05rem; color: #555;">AI-powered Face Emotion & Location Recognition</p>
+        </div>
     """, unsafe_allow_html=True)
 
 
