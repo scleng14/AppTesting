@@ -404,21 +404,28 @@ def main_app():
                     with col1:
                         st.subheader("🔍 Detection Results")
                         if detections:
-                            emotions = [d["emotion"] for d in detections]
-                            confidences = [d["confidence"] for d in detections]
+                        emotions = [d["emotion"] for d in detections]
+                        confidences = [d["confidence"] for d in detections]
 
-                            emotion_counts = {}
-                            for emo in emotions:
-                                emotion_counts[emo] = emotion_counts.get(emo, 0) + 1
-                            total_text = "🎭 {len(detections)} {face_word} detected: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
-                            st.success(total_text)
+                        st.success(f"🎭 {len(detections)} {face_word} detected")
 
-                            st.success(f"🎭 {len(detections)} {face_word} detected")
+                        # 汇总总数（简洁显示）
+                        emotion_counts = {}
+                        for emo in emotions:
+                            emotion_counts[emo] = emotion_counts.get(emo, 0) + 1
+                        total_text = "🧾 Emotion Summary:  " + ", ".join([f"**{count} {emo}**" for emo, count in emotion_counts.items()])
+                        st.markdown(total_text)
 
-                            # 折叠区域：详细每张脸的情绪和信心
-                            with st.expander("🔍 View per-face emotion details"):
-                                for i, (emo, conf) in enumerate(zip(emotions, confidences)):
-                                    st.write(f"- Face {i + 1}: {emo} ({conf}%)")
+                        # 展开详情（每张脸）
+                        with st.expander("🔍 Show per-face emotion details"):
+                            for i, (emo, conf) in enumerate(zip(emotions, confidences)):
+                                st.markdown(f"""
+                                    <div style="padding-left: 10px; margin-bottom: 8px;">
+                                        <strong>Face {i + 1}</strong>: {emo.title()}  
+                                        <br>Confidence: {conf:.1f}%
+                                    </div>
+                                """, unsafe_allow_html=True)
+
 
 
                             
