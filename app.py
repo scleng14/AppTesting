@@ -422,8 +422,8 @@ def main_app():
                                             <br>Confidence: {conf:.1f}%
                                         </div>
                                     """, unsafe_allow_html=True)
-                                    if i < len(detections) - 1:  # avoid extra line at end
-                                        st.markdown("<hr style='border: none; border-top: 1px solid #ccc;'>", unsafe_allow_html=True)
+                                if i < len(detections) - 1:  # avoid extra line at end
+                                    st.markdown("<hr style='border: none; border-top: 1px solid #ccc;'>", unsafe_allow_html=True)
 
                                 total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
                                 st.write(f"**{total_text}**")
