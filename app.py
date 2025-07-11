@@ -328,21 +328,6 @@ def main_app():
             <p style="color: #333; font-size: 1.2rem;">Upload a photo to detect facial emotions and estimate location.</p>
         </div>
     """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div style="
-        background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-        padding: 1.8rem;
-        border-radius: 18px;
-        text-align: center;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    ">
-        <h1 style="color: white; font-family: 'Segoe UI', sans-serif; font-size: 2.8rem; margin-bottom: 0.2rem;">👁‍🗨 Perspēct</h1>
-        <p style="font-size: 1.2rem; color: #f0f0f0; font-family: 'Segoe UI', sans-serif; margin-top: 0;">
-            AI-powered Face Emotion & Location Recognition
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
     
     # Show history if toggled, otherwise show regular tabs
     if st.session_state.get('show_history', False):
