@@ -314,18 +314,21 @@ def main_app():
     
     st.markdown("""
     <div style="
-        backdrop-filter: blur(10px);
-        background: linear-gradient(145deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
-        border-radius: 15px;
+        background: white;
+        border-radius: 18px;
         padding: 2rem;
-        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         text-align: center;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+        border: 1px solid #eee;
+        margin-bottom: 2rem;
     ">
-        <h1 style="color: #222; font-size: 2.3rem;">👁‍🗨 Perspēct</h1>
-        <p style="color: #444;">AI-powered Face Emotion & Location Recognition</p>
+        <h1 style="color: #222; font-size: 2.8rem; margin-bottom: 0.5rem;">👁‍🗨 Perspēct</h1>
+        <p style="color: #555; font-size: 1.2rem; font-weight: 400;">
+            AI-powered Face Emotion & Location Recognition
+        </p>
     </div>
     """, unsafe_allow_html=True)
+
 
 
     
