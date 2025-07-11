@@ -266,7 +266,7 @@ def show_user_history(username):
 
 # ----------------- Login/Signup Pages -----------------
 def login_page():
-    subtitle = None
+    subtitle = " "
     gradient_card(subtitle)
     st.subheader("🕵️‍♂️ Sign In")
     
