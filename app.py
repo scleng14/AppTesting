@@ -1,4 +1,5 @@
-import streamlit as st
+import os, streamlit as st
+import sys, subprocess
 import cv2
 import numpy as np
 from PIL import Image
@@ -9,6 +10,10 @@ import os
 import plotly.express as px
 from emotion_utils.detector import EmotionDetector
 import hashlib
+import tempfile
+from location_utils.extract_gps import extract_gps, convert_gps
+from location_utils.geocoder import get_address_from_coords
+from location_utils.landmark import load_models, detect_landmark, query_landmark_coords, LANDMARK_KEYWORDS
 
 # ----------------- User Authentication -----------------
 def authenticate(username, password):
@@ -65,7 +70,10 @@ def get_detector():
 
 detector = get_detector()
 
-def save_history(username, emotions, confidences, location="Unknown"):
+# Load CLIP models once
+processor, clip_model = load_models()
+
+def save_history(username, emotions, confidences, location):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     records = []
     for i, (emo, conf) in enumerate(zip(emotions, confidences)):
@@ -75,7 +83,7 @@ def save_history(username, emotions, confidences, location="Unknown"):
     try:
         if os.path.exists("history.csv"):
             prev = pd.read_csv("history.csv")
-            df = pd.concat([prev, df])
+            df = pd.concat([prev, df], ignore_index=True)
         df.to_csv("history.csv", index=False)
     except Exception as e:
         st.error(f"Failed to save history: {e}")
@@ -297,6 +305,10 @@ def signup_page():
 
 # ----------------- Main App -----------------
 def main_app():
+    # Initialize variables for sharing across tabs
+    coords_result = None
+    method = ""
+    
     username = st.session_state.get("username", "")
     sidebar_design(username)
     
@@ -312,12 +324,57 @@ def main_app():
         with tabs[0]:
             uploaded_file = st.file_uploader("Upload an image (JPG/PNG)", type=["jpg", "png"])
             if uploaded_file:
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_file:
+                    tmp_file.write(uploaded_file.read())
+                    temp_path = tmp_file.name
+                    
                 try:
-                    image = Image.open(uploaded_file)
+                    image = Image.open(uploaded_file).convert("RGB")
                     img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
                     detections = detector.detect_emotions(img)
                     detected_img = detector.draw_detections(img, detections)
 
+                    location = "Unknown"
+                    method = ""
+
+                    # 1) Try EXIF GPS
+                    gps_info = extract_gps(temp_path)
+                    if gps_info:
+                        coords = convert_gps(gps_info)
+                        if coords:
+                            coords_result = coords
+                            location = get_address_from_coords(coords)
+                            method = "GPS Metadata"
+                            
+                    # 2) Fallback to CLIP landmark
+                    if coords_result is None:
+                        landmark = detect_landmark(temp_path, threshold=0.15, top_k=5)
+                        if landmark:
+                            st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
+                            coords_loc, source = query_landmark_coords(landmark)
+                            if coords_loc:
+                                coords_result = coords_loc
+                                method = f"Landmark ({source})"
+                                addr = get_address_from_coords(coords_loc)
+                                if addr not in (
+                                    "Unknown location",
+                                    "Geocoding service unavailable"
+                                ):  # Valid address
+                                    location = addr
+                                else:
+                                    info = LANDMARK_KEYWORDS.get(landmark)
+                                    if info:
+                                        location = f"{info[0]}, {info[1]}"
+                                    else:
+                                        lat, lon = coords_loc
+                                        location = f"{landmark.title()} ({lat:.4f}, {lon:.4f})"
+                        else:
+                            st.write("🔍 No landmark detected with sufficient confidence")
+
+                except Exception as e:
+                    st.error(f"❌ Something went wrong during processing: {e}")
+
+                # Display detection results
                     col1, col2 = st.columns([1, 2])
                     with col1:
                         st.subheader("🔍 Detection Results")
@@ -340,6 +397,9 @@ def main_app():
                             st.write(total_text)
                             
                             show_detection_guide()
+                            st.write(
+                                f"📍 Estimated Location: **{location}** ({method})"
+                            )
                             save_history(username, emotions, confidences, "Unknown")
                         else:
                             st.warning("No faces were detected in the uploaded image.")
@@ -354,13 +414,15 @@ def main_app():
                     st.error(f"Error while processing the image: {e}")
 
         with tabs[1]:
-            st.subheader("🗺️ Random Location Sample (Demo)")
-            st.map(pd.DataFrame({
-                'lat': [3.139 + random.uniform(-0.01, 0.01)],
-                'lon': [101.6869 + random.uniform(-0.01, 0.01)]
-            }))
-            st.caption("Note: This location map is a demo preview and not actual detected GPS data.")
-
+        st.subheader("🗺️ Location Map")
+        if coords_result:
+            lat, lon = coords_result
+            map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
+            st.map(map_df)
+            st.caption(f"Source: {method}")
+        else:
+            st.info("No detected location to display on map.")
+            
 # ----------------- Run App -----------------
 if __name__ == "__main__":
     # Initialize session state variables
