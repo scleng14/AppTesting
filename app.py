@@ -313,6 +313,23 @@ def main_app():
         st.session_state.coords_result = None
     if "location_method" not in st.session_state:
         st.session_state.location_method = ""
+        
+    st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.15));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        ">
+            <h1 style="color: #222; font-size: 2.7rem;">👁‍🗨 Perspēct</h1>
+            <p style="color: #333; font-size: 1.15rem;">AI-powered Face Emotion & Location Recognition</p>
+        </div>
+     """, unsafe_allow_html=True)
 
     st.markdown("""
         <div style="
@@ -322,7 +339,6 @@ def main_app():
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
             text-align: center;
             border: 1px solid #ddd;
-            margin-bottom: 2rem;
         ">
             <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
             <p style="color: #333; font-size: 1.2rem;">Upload a photo to detect facial emotions and estimate location.</p>
