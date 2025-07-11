@@ -105,21 +105,21 @@ def show_detection_guide():
         - Avoid obstructed faces
         """)
         
-    def gradient_card():
-        return f"""
-            <div style="
-                background: linear-gradient(135deg, #fef9ff, #e7e7f9);
-                border-radius: 20px;
-                padding: 2rem;
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-                text-align: center;
-                border: 1px solid #ddd;
-                margin-bottom: 2rem;
-            ">
-                <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
-                <p style="color: #333; font-size: 1.2rem;">Upload a photo to detect facial emotions and estimate location.</p>
-            </div>
-        """
+def gradient_card():
+    return f"""
+        <div style="
+            background: linear-gradient(135deg, #fef9ff, #e7e7f9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            border: 1px solid #ddd;
+            margin-bottom: 2rem;
+        ">
+            <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
+            <p style="color: #333; font-size: 1.2rem;">Upload a photo to detect facial emotions and estimate location.</p>
+        </div>
+    """
 
 def sidebar_design(username):
     """Design the sidebar with user info and navigation"""
@@ -330,7 +330,7 @@ def main_app():
     if "location_method" not in st.session_state:
         st.session_state.location_method = ""
 
-    gradient_card
+    gradient_card()
     
     # Show history if toggled, otherwise show regular tabs
     if st.session_state.get('show_history', False):
