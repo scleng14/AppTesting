@@ -425,7 +425,7 @@ def main_app():
                                 total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
                                 st.write(total_text)
                                 
-                            st.expander.divider()
+                            st.divider()
                             method = st.session_state.get("location_method", "")
                             st.success(
                                 f"📍 Estimated Location: **{location}** "
