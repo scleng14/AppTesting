@@ -408,7 +408,7 @@ def main_app():
                             confidences = [d["confidence"] for d in detections]
 
                             st.markdown("### 🔍 <b>Per-Face Emotion Details</b>", unsafe_allow_html=True)
-                            wwith st.expander("Click to expand details"):
+                            with st.expander("Click to expand details"):
                                 for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                     st.markdown(f"""
                                         <div style="padding-left: 10px; margin-bottom: 8px;">
