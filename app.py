@@ -426,7 +426,7 @@ def main_app():
                                         st.markdown("<hr style='border: none; border-top: 1px solid #ccc;'>", unsafe_allow_html=True)
 
                                 total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
-                                st.write(total_text)
+                                st.write(f"**{total_text}**")
                                 
                             st.divider()
                             method = st.session_state.get("location_method", "")
