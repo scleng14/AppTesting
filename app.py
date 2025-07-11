@@ -360,7 +360,7 @@ def main_app():
 
                     location = "Unknown"
                     coords = None
-                    face_word = "face" if len(detections) == 1 else "faces"
+                    face_word = "Face" if len(detections) == 1 else "Faces"
 
                     # 1) Try EXIF GPS
                     gps_info = extract_gps(temp_path)
@@ -407,7 +407,7 @@ def main_app():
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
                             
-                            st.success(f"🎭 {len(detections)} {face_word} detected")
+                            st.success(f"🎭 {len(detections)} {face_word} Detected")
 
                             # Add emotion totals
                             emotion_counts = {}
