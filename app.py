@@ -335,20 +335,19 @@ def main_app():
                     detected_img = detector.draw_detections(img, detections)
 
                     location = "Unknown"
-                    method = ""
+                    coords = None
 
                     # 1) Try EXIF GPS
                     gps_info = extract_gps(temp_path)
                     if gps_info:
                         coords = convert_gps(gps_info)
                         if coords:
-                            location = get_address_from_coords(coords)
                             st.session_state.coords_result = coords
                             st.session_state.location_method = "GPS Metadata"
-
+                            location = get_address_from_coords(coords)
                             
                     # 2) Fallback to CLIP landmark
-                    if st.session_state.coords_result is None:
+                    if coords is None:
                         landmark = detect_landmark(temp_path, threshold=0.15, top_k=5)
                         if landmark:
                             st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
@@ -375,7 +374,7 @@ def main_app():
                 except Exception as e:
                     st.error(f"❌ Something went wrong during processing: {e}")
 
-                # Display detection results
+                    # Display detection results
                     col1, col2 = st.columns([1, 2])
                     with col1:
                         st.subheader("🔍 Detection Results")
@@ -398,6 +397,7 @@ def main_app():
                             st.write(total_text)
                             
                             show_detection_guide()
+                            method = st.session_state.get("location_method", "")
                             st.write(
                                 f"📍 Estimated Location: **{location}** ({method})"
                             )
@@ -411,6 +411,9 @@ def main_app():
                         with t2:
                             st.image(detected_img, channels="BGR", use_container_width=True,
                                     caption=f"Detected {len(detections)} {face_word}")
+                finally:
+                    if os.path.exists(temp_path):
+                        os.remove(temp_path)
 
         with tabs[1]:
             st.subheader("🗺️ Detected Location Map")
