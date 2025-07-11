@@ -314,16 +314,19 @@ def main_app():
     
     st.markdown("""
     <div style="
-        background: linear-gradient(to right, #f9f9f9, #f0f0f0);
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        background: linear-gradient(145deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+        border-radius: 15px;
+        padding: 2rem;
+        border: 1px solid rgba(255,255,255,0.2);
         text-align: center;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
     ">
-        <h1 style="font-size: 2.2rem; font-weight: 600; margin-bottom: 0.5rem;">👁‍🗨 Perspēct</h1>
-        <p style="font-size: 1.1rem; color: #444;">Upload a photo to detect <b>facial emotions</b> and <b>estimate location</b>.</p>
+        <h1 style="color: #222; font-size: 2.3rem;">👁‍🗨 Perspēct</h1>
+        <p style="color: #444;">AI-powered Face Emotion & Location Recognition</p>
     </div>
     """, unsafe_allow_html=True)
+
 
     
     # Show history if toggled, otherwise show regular tabs
