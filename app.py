@@ -105,7 +105,7 @@ def show_detection_guide():
         - Avoid obstructed faces
         """)
         
-def gradient_card(content):
+def gradient_card():
     st.markdown("""
         <div style="
             background: linear-gradient(135deg, #fef9ff, #e7e7f9);
@@ -117,9 +117,10 @@ def gradient_card(content):
             margin-bottom: 2rem;
         ">
             <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
-            <p style="color: #333; font-size: 1.2rem;">
-                {content}
-            </p>
+            if username: 
+                <p style="color: #333; font-size: 1.2rem;">
+                    Upload a photo to detect facial emotions and estimate location.
+                </p>
         </div>
     """, unsafe_allow_html=True)
 
