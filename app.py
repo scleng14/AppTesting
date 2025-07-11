@@ -316,51 +316,18 @@ def main_app():
         
     st.markdown("""
         <div style="
-            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.15));
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            padding: 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        ">
-            <h1 style="color: #222; font-size: 2.7rem;">👁‍🗨 Perspēct</h1>
-            <p style="color: #333; font-size: 1.15rem;">AI-powered Face Emotion & Location Recognition</p>
-        </div>
-     """, unsafe_allow_html=True)
-
-    st.markdown("""
-        <div style="
             background: linear-gradient(135deg, #fef9ff, #e7e7f9);
-            border-radius: 18px;
+            border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
             text-align: center;
             border: 1px solid #ddd;
+            margin-bottom: 2rem;
         ">
             <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
             <p style="color: #333; font-size: 1.2rem;">Upload a photo to detect facial emotions and estimate location.</p>
         </div>
     """, unsafe_allow_html=True)
-
-    st.markdown("""
-        <div style="
-            background: #f0f0f3;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 
-                8px 8px 16px #d1d9e6,
-                -8px -8px 16px #ffffff;
-            text-align: center;
-            margin-bottom: 2rem;
-        ">
-            <h1 style="font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
-            <p style="font-size: 1.2rem;">AI-powered Face Emotion & Location Recognition</p>
-        </div>
-    """, unsafe_allow_html=True)
-
     
     # Show history if toggled, otherwise show regular tabs
     if st.session_state.get('show_history', False):
