@@ -375,7 +375,6 @@ def main_app():
                     if coords is None:
                         landmark = detect_landmark(temp_path, threshold=0.15, top_k=5)
                         if landmark:
-                            st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
                             coords_loc, source = query_landmark_coords(landmark)
                             if coords_loc:
                                 st.session_state.coords_result = coords_loc
@@ -449,6 +448,10 @@ def main_app():
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
                 st.map(map_df)
+                st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
+                st.write(
+                                f"📍 Estimated Location: **{location}** "
+                            )
                 st.caption(f"Source: {method}")
             else:
                 st.info("No detected location to display on map.")
