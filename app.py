@@ -406,17 +406,22 @@ def main_app():
                         if detections:
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
-                            
+
                             st.success(f"🎭 {len(detections)} {face_word} detected")
-                            for i, (emo, conf) in enumerate(zip(emotions, confidences)):
-                                st.write(f"- Face {i + 1}: {emo} ({conf}%)")
-                            
-                            # Add emotion totals
+
+                            # 汇总显示（始终可见）
                             emotion_counts = {}
                             for emo in emotions:
                                 emotion_counts[emo] = emotion_counts.get(emo, 0) + 1
                             total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
                             st.write(total_text)
+
+                            # 折叠区域：详细每张脸的情绪和信心
+                            with st.expander("🔍 View per-face emotion details"):
+                                for i, (emo, conf) in enumerate(zip(emotions, confidences)):
+                                    st.write(f"- Face {i + 1}: {emo} ({conf}%)")
+
+
                             
                             show_detection_guide()
                             method = st.session_state.get("location_method", "")
