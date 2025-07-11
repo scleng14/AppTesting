@@ -314,16 +314,14 @@ def main_app():
     
     st.markdown("""
     <div style="
-        background-color: #f8f8e7;
-        padding: 1.5rem;
+        background: linear-gradient(to right, #f9f9f9, #f0f0f0);
         border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         text-align: center;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     ">
-        <h1 style="color: #333333; font-family: 'Segoe UI', sans-serif;">👁‍🗨 Perspēct</h1>
-        <p style="font-size: 1.1rem; color: #555555; font-family: 'Segoe UI', sans-serif;">
-            Upload a photo to detect facial emotions and estimate location.
-        </p>
+        <h1 style="font-size: 2.2rem; font-weight: 600; margin-bottom: 0.5rem;">👁‍🗨 Perspēct</h1>
+        <p style="font-size: 1.1rem; color: #444;">Upload a photo to detect <b>facial emotions</b> and <b>estimate location</b>.</p>
     </div>
     """, unsafe_allow_html=True)
 
