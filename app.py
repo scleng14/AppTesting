@@ -407,7 +407,7 @@ def main_app():
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
                             
-                            st.success(f"🎭 **{len(detections)} {face_word} Detected**")
+                            st.success(f"🎭 **{len(detections)}** {face_word} Detected")
 
                             # Add emotion totals
                             emotion_counts = {}
