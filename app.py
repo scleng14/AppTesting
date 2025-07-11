@@ -354,8 +354,8 @@ def main_app():
                             st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
                             coords_loc, source = query_landmark_coords(landmark)
                             if coords_loc:
-                                coords_result = coords_loc
-                                method = f"Landmark ({source})"
+                                st.session_state.coords_result = coords_loc
+                                st.session_state.location_method = f"Landmark ({source})"
                                 addr = get_address_from_coords(coords_loc)
                                 if addr not in (
                                     "Unknown location",
@@ -414,6 +414,8 @@ def main_app():
 
         with tabs[1]:
             st.subheader("🗺️ Detected Location Map")
+            coords_result = st.session_state.get("coords_result", None)
+            method = st.session_state.get("location_method", "")
             if coords_result:
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
