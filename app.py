@@ -105,17 +105,8 @@ def show_detection_guide():
         - Avoid obstructed faces
         """)
         
-def gradient_card(username):
-    if username:
-        subtitle = """
-            <p style="color: #333; font-size: 1.2rem;">
-                Upload a photo to detect facial emotions and estimate location.
-            </p>
-        """
-    else:
-        subtitle = ""  
-
-    html = f"""
+def gradient_card(subtitle):
+    st.markdown("""
         <div style="
             background: linear-gradient(135deg, #fef9ff, #e7e7f9);
             border-radius: 20px;
@@ -126,10 +117,11 @@ def gradient_card(username):
             margin-bottom: 2rem;
         ">
             <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
-            {subtitle}
+            <p style="color: #333; font-size: 1.2rem;">
+                {subtitle}
+            </p>
         </div>
-    """
-    st.markdown(html, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 def sidebar_design(username):
     """Design the sidebar with user info and navigation"""
@@ -274,8 +266,8 @@ def show_user_history(username):
 
 # ----------------- Login/Signup Pages -----------------
 def login_page():
-    st.title("👁‍🗨 Perspēct")
-    gradient_card(username)
+    subtitle = ""
+    gradient_card(subtitle)
     st.subheader("🕵️‍♂️ Sign In")
     
     with st.form("login_form"):
@@ -301,8 +293,8 @@ def login_page():
             st.rerun()
 
 def signup_page():
-    st.title("👁‍🗨 Perspēct")
-    gradient_card(username)
+    subtitle = ""
+    gradient_card(subtitle)
     st.subheader("🕵️‍♂️ Sign Up")
     
     with st.form("signup_form"):
@@ -342,7 +334,8 @@ def main_app():
     if "location_method" not in st.session_state:
         st.session_state.location_method = ""
 
-    gradient_card(username)
+    subtitle = "Upload a photo to detect facial emotions and estimate location."
+    gradient_card(subtitle)
     
     # Show history if toggled, otherwise show regular tabs
     if st.session_state.get('show_history', False):
