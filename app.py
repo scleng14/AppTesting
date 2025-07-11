@@ -317,7 +317,7 @@ def main_app():
     st.markdown("""
         <div style="
             background: linear-gradient(135deg, #fef9ff, #e7e7f9);
-            border-radius: 18px;
+            border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
             text-align: center;
