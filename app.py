@@ -406,8 +406,13 @@ def main_app():
                         if detections:
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
+                            
+                            st.success(f"🎭 {len(detections)} {face_word} detected")
 
-                            st.markdown("### 🔍 <b>Per-Face Emotion Details</b>", unsafe_allow_html=True)
+                            # Add emotion totals
+                            emotion_counts = {}
+                            for emo in emotions:
+                                emotion_counts[emo] = emotion_counts.get(emo, 0) + 1
                             with st.expander("Click to expand details"):
                                 for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                     st.markdown(f"""
@@ -417,22 +422,8 @@ def main_app():
                                         </div>
                                     """, unsafe_allow_html=True)
 
-
-
-
-
-
-
-
-                                for i, (emo, conf) in enumerate(zip(emotions, confidences)):
-                                    st.write(f"- Face {i + 1}: {emo} ({conf}%)")
-
-                            # Add emotion totals
-                            emotion_counts = {}
-                            for emo in emotions:
-                                emotion_counts[emo] = emotion_counts.get(emo, 0) + 1
-                            total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
-                            st.write(total_text)
+                                total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
+                                st.write(total_text)
 
                             method = st.session_state.get("location_method", "")
                             st.write(
