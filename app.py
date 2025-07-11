@@ -106,7 +106,16 @@ def show_detection_guide():
         """)
         
 def gradient_card(subtitle):
-    st.markdown("""
+    if subtitle:
+        subtitle_html = f"""
+            <p style="color: #333; font-size: 1.2rem;">
+                {subtitle}
+            </p>
+        """
+    else:
+        subtitle_html = "" 
+
+    st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #fef9ff, #e7e7f9);
             border-radius: 20px;
@@ -117,9 +126,7 @@ def gradient_card(subtitle):
             margin-bottom: 2rem;
         ">
             <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
-            <p style="color: #333; font-size: 1.2rem;">
-                {subtitle}
-            </p>
+            {subtitle_html}
         </div>
     """, unsafe_allow_html=True)
 
@@ -266,8 +273,7 @@ def show_user_history(username):
 
 # ----------------- Login/Signup Pages -----------------
 def login_page():
-    subtitle = None
-    gradient_card(subtitle)
+    gradient_card(None)
     st.subheader("🕵️‍♂️ Sign In")
     
     with st.form("login_form"):
@@ -293,8 +299,7 @@ def login_page():
             st.rerun()
 
 def signup_page():
-    subtitle = ""
-    gradient_card(subtitle)
+    gradient_card(None)
     st.subheader("🕵️‍♂️ Sign Up")
     
     with st.form("signup_form"):
@@ -327,7 +332,7 @@ def signup_page():
 # ----------------- Main App -----------------
 def main_app():
     username = st.session_state.get("username", "")
-    sidebar_design(username)
+    sidebar_design("Upload a photo to detect facial emotions and estimate location.")
 
     if "coords_result" not in st.session_state:
         st.session_state.coords_result = None
