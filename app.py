@@ -340,7 +340,7 @@ def main_app():
                 margin-bottom: 1rem;
             ">
                 <h4 style="color: white; margin-bottom: 0.5rem;">{title}</h4>
-                <p style="color: #fff;">{content}</p>
+                <p style="color: #fff;">Upload a photo to detect facial emotions and estimate location.</p>
             </div>
         """
 
