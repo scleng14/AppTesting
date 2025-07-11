@@ -413,6 +413,7 @@ def main_app():
                             emotion_counts = {}
                             for emo in emotions:
                                 emotion_counts[emo] = emotion_counts.get(emo, 0) + 1
+                                
                             with st.expander("Click to expand details"):
                                 for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                     st.markdown(f"""
@@ -420,8 +421,9 @@ def main_app():
                                             <strong>Face {i + 1}</strong>: {emo.title()}  
                                             <br>Confidence: {conf:.1f}%
                                         </div>
+                                        <hr>
                                     """, unsafe_allow_html=True)
-                                st.expander.divider()
+
                                 total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
                                 st.write(total_text)
                                 
