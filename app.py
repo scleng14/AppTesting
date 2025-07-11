@@ -119,7 +119,7 @@ def gradient_card():
             <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
             <p style="color: #333; font-size: 1.2rem;">Upload a photo to detect facial emotions and estimate location.</p>
         </div>
-    """
+    """, unsafe_allow_html=True)
 
 def sidebar_design(username):
     """Design the sidebar with user info and navigation"""
