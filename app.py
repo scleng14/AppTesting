@@ -328,7 +328,7 @@ def signup_page():
 # ----------------- Main App -----------------
 def main_app():
     username = st.session_state.get("username", "")
-    sidebar_design("Upload a photo to detect facial emotions and estimate location.")
+    sidebar_design(username)
 
     if "coords_result" not in st.session_state:
         st.session_state.coords_result = None
