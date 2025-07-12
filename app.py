@@ -485,16 +485,11 @@ def main_app():
             landmark = st.session_state.get("landmark", "N/A")
 
             st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
-            show_map = (
-                coords_result is not None
-                and location not in ("Unknown", "Geocoding service unavailable")
-            )
-            
-            
-            if show_map:
+            st.write(f"📍 Estimated Location: **{location_str}** ")
+
+            if coords_result and location_str != "Unknown":
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
-                st.write(f"📍 Estimated Location: **{location}** ")
                 st.caption("**Combined detection** lets the system analyze emotion and location in a single image.")
                 show_loc_detection_guide()
                 st.map(map_df)
