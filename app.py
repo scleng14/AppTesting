@@ -417,7 +417,6 @@ def main_app():
                                     else:
                                         lat, lon = coords_loc
                                         location = f"{landmark.title()} ({lat:.4f}, {lon:.4f})"
-                                st.session_state["location_str"] = location
                         else:
                             st.write("🔍 No landmark detected with sufficient confidence")
 
@@ -456,7 +455,6 @@ def main_app():
                                 
                             method = st.session_state.get("location_method", "")
                             st.success(f"📍 Estimated Location: **{location}** ")
-                            st.session_state["location_str"] = location
                             st.divider()
                             show_emo_detection_guide()
                             save_history(username, emotions, confidences, location)
@@ -481,19 +479,25 @@ def main_app():
             st.markdown("<hr style='width: 325px; margin-top: 0;'>", unsafe_allow_html=True)
             
             coords_result = st.session_state.get("coords_result", None)
-            location = st.session_state.get("location_str", "Unknown")
+            method = st.session_state.get("location_method", "")
             landmark = st.session_state.get("landmark", "N/A")
-
-            st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
-            st.write(f"📍 Estimated Location: **{location_str}** ")
-
-            if coords_result and location_str != "Unknown":
+            
+            # Initialize location variable
+            location = "Unknown"
+            if coords_result:
+                # Get location from coordinates if available
+                location = get_address_from_coords(coords_result)
+            
+            if coords_result and location != "Unknown":
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
+                st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
+                st.write(f"📍 Estimated Location: **{location}** ")
                 st.caption("**Combined detection** lets the system analyze emotion and location in a single image.")
                 show_loc_detection_guide()
                 st.map(map_df)
             else:
+                st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
                 st.warning("📍 Estimated Location is unknown, so the map is not displayed.")
                 
 # ----------------- Run App -----------------
