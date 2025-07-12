@@ -1,18 +1,11 @@
 from deepface import DeepFace
 import cv2
 import numpy as np
+from config import get_config
 
 class EmotionDetector:
     def __init__(self):
-        self.color_map = {
-            "happy": (0, 255, 0),      # Green
-            "neutral": (255, 255, 0),  # Yellow
-            "sad": (0, 0, 255),       # Red
-            "angry": (0, 165, 255),   # Orange
-            "fear": (128, 0, 128),    # Purple
-            "surprise": (255, 0, 255),# Pink
-            "disgust": (0, 128, 0)    # Dark Green
-        }
+        self.color_map = get_config()["color_map"]
 
     def detect_emotions(self, img):
         """Detect emotions using DeepFace"""
