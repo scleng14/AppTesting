@@ -148,9 +148,9 @@ def sidebar_design(username):
     st.sidebar.markdown("---")
     st.sidebar.info("""
     💡 *Tips for Better Results:*
-        - Use clear, front-facing images
-        - Ensure good lighting
-        - Avoid obstructed faces
+    - Use clear, front-facing images
+    - Ensure good lighting
+    - Avoid obstructed faces
     """)
     st.sidebar.info("Enhance your experience by ensuring clear, well-lit facial images.")
     st.sidebar.divider()
