@@ -98,9 +98,19 @@ def show_detection_guide():
         - 😲 Surprise: Eyebrows raised, mouth open
         - 😨 Fear: Eyes tense, lips stretched
         - 🤢 Disgust: Nose wrinkled, upper lip raised
+        ---
+        ### 📍 Location Detection
+        **How It Works:**
+        - If your image contains **GPS metadata** (EXIF), the system will extract coordinates and estimate location.
+        - If no GPS is available, it uses **landmark recognition** powered by a vision-language AI model (CLIP) to estimate location based on visual clues in the image.
 
+        **Tips for Better Location Results:**
+        - For GPS: Use original images taken by smartphones (not screenshots or edited).
+        - For Landmark: Ensure the image includes distinctive landmarks (e.g. buildings, scenery).
+
+        ---
+        ✅ **Combined detection** lets the system analyze emotion and location in a single image.
         """)
-
         
 def gradient_card(subtitle):
     if subtitle:
