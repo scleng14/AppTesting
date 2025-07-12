@@ -146,7 +146,7 @@ def sidebar_design(username):
     # Make all sidebar sections consistent in length
     st.sidebar.markdown("---")
     st.sidebar.info("""
-     *Tips for Better Results:*
+    💡 *Tips for Better Results:*
     - Use clear, front-facing images
     - Ensure good lighting
     - Avoid obstructed faces
@@ -478,7 +478,7 @@ def main_app():
                 st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
                 st.write(f"📍 Estimated Location: **{location}** ")
                 st.caption("**Combined detection** lets the system analyze emotion and location in a single image.")
-                show_detection_guide()
+                show_loc_detection_guide()
                 st.map(map_df)
                 
             else:
