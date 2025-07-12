@@ -419,7 +419,7 @@ def main_app():
                     col1, col2 = st.columns([1, 2])
                     with col1:
                         st.subheader("🔍 Detection Results")
-                        st.markdown("""<hr style='width: 25%; margin-top: 0;'>""", unsafe_allow_html=True)
+                        st.markdown("""<hr style='width: 60%; margin-top: 0;'>""", unsafe_allow_html=True)
                         if detections:
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
