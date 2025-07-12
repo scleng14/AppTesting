@@ -1,7 +1,7 @@
 from deepface import DeepFace
 import cv2
 import numpy as np
-from config import get_config
+from emotion_utils.config import get_config
 
 class EmotionDetector:
     def __init__(self):
