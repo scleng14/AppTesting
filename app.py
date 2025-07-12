@@ -146,7 +146,7 @@ def sidebar_design(username):
     
     # Make all sidebar sections consistent in length
     st.sidebar.markdown("---")
-    st.markdown("""
+    st.siderbar.markdown("""
     *Tips for Better Results:*
         - Use clear, front-facing images
         - Ensure good lighting
@@ -452,6 +452,7 @@ def main_app():
                             st.success(f"📍 Estimated Location: **{location}** ")
                             st.divider()
                             show_emo_detection_guide()
+                            show_loc_detection_guide()
                             save_history(username, emotions, confidences, location)
                         else:
                             st.warning("No faces were detected in the uploaded image.")
