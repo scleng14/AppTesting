@@ -348,6 +348,8 @@ def main_app():
         st.session_state.coords_result = None
     if "location_method" not in st.session_state:
         st.session_state.location_method = ""
+    if "landmark" not in st.session_state:
+        st.session_state.landmark = None
 
     subtitle = "Upload a photo to detect facial emotions and estimate location."
     gradient_card(subtitle)
@@ -371,7 +373,8 @@ def main_app():
                     detector = EmotionDetector()
                     detections = detector.detect_emotions(img)
                     detected_img = detector.draw_detections(img, detections)
-
+                    
+                    landmark = None 
                     location = "Unknown"
                     coords = None
                     face_word = "Face" if len(detections) == 1 else "Faces"
@@ -388,6 +391,7 @@ def main_app():
                     # 2) Fallback to CLIP landmark
                     if coords is None:
                         landmark = detect_landmark(temp_path, threshold=0.15, top_k=5)
+                        st.session_state.landmark = landmark
                         if landmark:
                             coords_loc, source = query_landmark_coords(landmark)
                             if coords_loc:
@@ -472,6 +476,7 @@ def main_app():
             st.subheader("🗺️ Detected Location Map")
             coords_result = st.session_state.get("coords_result", None)
             method = st.session_state.get("location_method", "")
+            landmark = st.session_state.get("landmark", "N/A")
             if coords_result:
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
