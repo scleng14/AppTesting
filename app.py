@@ -86,7 +86,28 @@ def save_history(username, emotions, confidences, location):
         df.to_csv("history.csv", index=False)
     except Exception as e:
         st.error(f"Failed to save history: {e}")
-#————————————————————————————————————————————————————————————————————————————————————
+
+def gradient_card(subtitle):
+    if subtitle:
+        subtitle_html = f'<p style="color: #333; font-size: 1.2rem;">{subtitle}</p>'
+    else:
+        subtitle_html = "" 
+
+    st.markdown(f"""
+        <div style="
+            background: linear-gradient(135deg, #fef9ff, #e7e7f9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            border: 1px solid #ddd;
+            margin-bottom: 2rem;
+        ">
+            <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
+            {subtitle_html}
+        </div>
+    """, unsafe_allow_html=True)
+
 def show_emo_detection_guide():
     with st.expander("ℹ️ How Emotion Detection Works", expanded=False):
         st.markdown("""
@@ -116,35 +137,12 @@ def show_loc_detection_guide():
         - For GPS: Use original images taken by smartphones (not screenshots or edited).
         - For Landmark: Ensure the image includes distinctive landmarks (e.g. buildings, scenery).
         """)
-        
-def gradient_card(subtitle):
-    if subtitle:
-        subtitle_html = f'<p style="color: #333; font-size: 1.2rem;">{subtitle}</p>'
-    else:
-        subtitle_html = "" 
-
-    st.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, #fef9ff, #e7e7f9);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-            text-align: center;
-            border: 1px solid #ddd;
-            margin-bottom: 2rem;
-        ">
-            <h1 style="color: #5a189a; font-size: 2.8rem;">👁‍🗨 Perspēct</h1>
-            {subtitle_html}
-        </div>
-    """, unsafe_allow_html=True)
 
 def sidebar_design(username):
     """Design the sidebar with user info and navigation"""
     if username:  # Only show if username exists
         st.sidebar.success(f"👤 Logged in as: {username}")
     
-    # Make all sidebar sections consistent in length
-    st.sidebar.markdown("---")
     # Make all sidebar sections consistent in length
     st.sidebar.markdown("---")
     st.sidebar.markdown("## Quick Navigation")
@@ -469,7 +467,10 @@ def main_app():
 
         with tabs[1]:
             st.subheader("🗺️ Detected Location Map")
-            st.divider()
+            st.markdown("""<hr style='width: fit-content; border: 1px solid #999; margin-top: 0;'>""", unsafe_allow_html=True)
+            st.markdown("<hr style='width: 80%; margin-left: auto; margin-right: auto;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='width: fit-content; margin-top: 0; border: 1px solid #ccc;'>", unsafe_allow_html=True)
+            
             coords_result = st.session_state.get("coords_result", None)
             method = st.session_state.get("location_method", "")
             landmark = st.session_state.get("landmark", "N/A")
