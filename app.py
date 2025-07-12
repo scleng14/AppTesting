@@ -480,19 +480,23 @@ def main_app():
             st.markdown("<hr style='width: 325px; margin-top: 0;'>", unsafe_allow_html=True)
             
             coords_result = st.session_state.get("coords_result", None)
-            method = st.session_state.get("location_method", "Unknown")
+            location = st.session_state.get("location_str", "Unknown")
             landmark = st.session_state.get("landmark", "N/A")
+
+            show_map = (
+                coords_result is not None
+                and location not in ("Unknown", "Geocoding service unavailable")
+            )
+            st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
             
-            if coords_result and location != "Unknown":
+            if show_map:
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
-                st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
                 st.write(f"📍 Estimated Location: **{location}** ")
                 st.caption("**Combined detection** lets the system analyze emotion and location in a single image.")
                 show_loc_detection_guide()
                 st.map(map_df)
             else:
-                st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
                 st.warning("📍 Estimated Location is unknown, so the map is not displayed.")
                 
 # ----------------- Run App -----------------
