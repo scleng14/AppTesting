@@ -467,7 +467,7 @@ def main_app():
 
         with tabs[1]:
             st.subheader("🗺️ Detected Location Map")
-            st.markdown("""<hr style='width: 30%; border: 1px solid #999; margin-top: 0;'>""", unsafe_allow_html=True)
+            st.markdown("""<hr style='width: 25%; margin-top: 0;'>""", unsafe_allow_html=True)
             st.markdown("<hr style='width: 80%; margin-left: auto; margin-right: auto;'>", unsafe_allow_html=True)
             st.markdown("<hr style='width: fit-content; margin-top: 0; border: 1px solid #ccc;'>", unsafe_allow_html=True)
             
