@@ -472,7 +472,7 @@ def main_app():
             coords_result = st.session_state.get("coords_result", None)
             method = st.session_state.get("location_method", "")
             landmark = st.session_state.get("landmark", "N/A")
-            if coords_result:
+            if coords_result and location != "Unknown":
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
                 st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
