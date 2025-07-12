@@ -479,13 +479,8 @@ def main_app():
             st.markdown("<hr style='width: 325px; margin-top: 0;'>", unsafe_allow_html=True)
             
             coords_result = st.session_state.get("coords_result", None)
-            method = st.session_state.get("location_method", "Unknown")
+            method = st.session_state.get("location_method", "")
             landmark = st.session_state.get("landmark", "N/A")
-            
-            if coords_result and location != "Unknown":
-                # Get location from coordinates if available
-                location = get_address_from_coords(coords_result)
-            
             if coords_result and location != "Unknown":
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
