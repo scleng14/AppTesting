@@ -87,7 +87,7 @@ def save_history(username, emotions, confidences, location):
     except Exception as e:
         st.error(f"Failed to save history: {e}")
 #————————————————————————————————————————————————————————————————————————————————————
-def show_detection_guide():
+def show_emo_detection_guide():
     with st.expander("ℹ️ How Emotion Detection Works", expanded=False):
         st.markdown("""
         *Detection Logic Explained:*
@@ -98,18 +98,23 @@ def show_detection_guide():
         - 😲 Surprise: Eyebrows raised, mouth open
         - 😨 Fear: Eyes tense, lips stretched
         - 🤢 Disgust: Nose wrinkled, upper lip raised
-        ---
-        ### 📍 Location Detection
-        **How It Works:**
+        
+        *Tips for Better Results:*
+        - Use clear, front-facing images
+        - Ensure good lighting
+        - Avoid obstructed faces
+        """)
+
+def show_loc_detection_guide():
+    with st.expander("ℹ️ How Location Detection Works", expanded=False):
+        st.markdown("""
+        *How It Works:*
         - If your image contains **GPS metadata** (EXIF), the system will extract coordinates and estimate location.
         - If no GPS is available, it uses **landmark recognition** powered by a vision-language AI model (CLIP) to estimate location based on visual clues in the image.
 
-        **Tips for Better Location Results:**
+        *Tips for Better Location Results:*
         - For GPS: Use original images taken by smartphones (not screenshots or edited).
         - For Landmark: Ensure the image includes distinctive landmarks (e.g. buildings, scenery).
-
-        ---
-        ✅ **Combined detection** lets the system analyze emotion and location in a single image.
         """)
         
 def gradient_card(subtitle):
@@ -445,7 +450,7 @@ def main_app():
                             method = st.session_state.get("location_method", "")
                             st.success(f"📍 Estimated Location: **{location}** ")
                             st.divider()
-                            show_detection_guide()
+                            show_emo_detection_guide()
                             save_history(username, emotions, confidences, location)
                         else:
                             st.warning("No faces were detected in the uploaded image.")
@@ -470,12 +475,12 @@ def main_app():
             if coords_result:
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
-                st.map(map_df)
                 st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
-                st.write(
-                                f"📍 Estimated Location: **{location}** "
-                            )
-                st.caption(f"Source: {method}")
+                st.write(f"📍 Estimated Location: **{location}** ")
+                st.caption("**Combined detection** lets the system analyze emotion and location in a single image.")
+                show_detection_guide()
+                st.map(map_df)
+                
             else:
                 st.info("No detected location to display on map.")
             
