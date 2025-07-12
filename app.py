@@ -455,6 +455,7 @@ def main_app():
                                 
                             method = st.session_state.get("location_method", "")
                             st.success(f"📍 Estimated Location: **{location}** ")
+                            st.session_state["location_str"] = location
                             st.divider()
                             show_emo_detection_guide()
                             save_history(username, emotions, confidences, location)
@@ -479,8 +480,9 @@ def main_app():
             st.markdown("<hr style='width: 325px; margin-top: 0;'>", unsafe_allow_html=True)
             
             coords_result = st.session_state.get("coords_result", None)
-            method = st.session_state.get("location_method", "")
+            method = st.session_state.get("location_method", "Unknown")
             landmark = st.session_state.get("landmark", "N/A")
+            
             if coords_result and location != "Unknown":
                 lat, lon = coords_result
                 map_df = pd.DataFrame({"lat": [lat], "lon": [lon]})
