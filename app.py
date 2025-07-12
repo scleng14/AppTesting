@@ -91,13 +91,13 @@ def show_emo_detection_guide():
     with st.expander("ℹ️ How Emotion Detection Works", expanded=False):
         st.markdown("""
         *Detection Logic Explained:*
-        - 😊 Happy: Smile present, cheeks raised
-        - 😠 Angry: Eyebrows lowered, eyes wide open
-        - 😐 Neutral: No strong facial movements
-        - 😢 Sad: Eyebrows raised, lip corners down
-        - 😲 Surprise: Eyebrows raised, mouth open
-        - 😨 Fear: Eyes tense, lips stretched
-        - 🤢 Disgust: Nose wrinkled, upper lip raised
+        - 😊 **Happy**: Smile present, cheeks raised
+        - 😠 **Angry**: Eyebrows lowered, eyes wide open
+        - 😐 **Neutral**: No strong facial movements
+        - 😢 **Sad**: Eyebrows raised, lip corners down
+        - 😲 **Surprise**: Eyebrows raised, mouth open
+        - 😨 **Fear**: Eyes tense, lips stretched
+        - 🤢 **Disgust**: Nose wrinkled, upper lip raised
         
         *Tips for Better Results:*
         - Use clear, front-facing images
