@@ -467,8 +467,7 @@ def main_app():
 
         with tabs[1]:
             st.subheader("🗺️ Detected Location Map")
-            st.markdown("<hr style='width: 200px; border: 1px solid #ccc; margin-top: 0;'>", unsafe_allow_html=True)
-            st.markdown("<hr style='width: 180px; margin: 0 auto; border: 1px solid #ccc;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='width: 325px; border: 1px solid #e7e7f9; margin-top: 0;'>", unsafe_allow_html=True)
             
             coords_result = st.session_state.get("coords_result", None)
             method = st.session_state.get("location_method", "")
