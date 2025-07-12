@@ -419,7 +419,7 @@ def main_app():
                     col1, col2 = st.columns([1, 2])
                     with col1:
                         st.subheader("🔍 Detection Results")
-                        st.divider()
+                        st.markdown("""<hr style='width: 25%; margin-top: 0;'>""", unsafe_allow_html=True)
                         if detections:
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
@@ -468,8 +468,6 @@ def main_app():
         with tabs[1]:
             st.subheader("🗺️ Detected Location Map")
             st.markdown("""<hr style='width: 25%; margin-top: 0;'>""", unsafe_allow_html=True)
-            st.markdown("<hr style='width: 80%; margin-left: auto; margin-right: auto;'>", unsafe_allow_html=True)
-            st.markdown("<hr style='width: fit-content; margin-top: 0; border: 1px solid #ccc;'>", unsafe_allow_html=True)
             
             coords_result = st.session_state.get("coords_result", None)
             method = st.session_state.get("location_method", "")
