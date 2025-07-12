@@ -146,7 +146,7 @@ def sidebar_design(username):
     
     # Make all sidebar sections consistent in length
     st.sidebar.markdown("---")
-    st.siderbar.markdown("""
+    st.sidebar.markdown("""
     *Tips for Better Results:*
         - Use clear, front-facing images
         - Ensure good lighting
