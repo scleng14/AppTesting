@@ -87,7 +87,7 @@ def save_history(username, emotions, confidences, location):
     except Exception as e:
         st.error(f"Failed to save history: {e}")
 #————————————————————————————————————————————————————————————————————————————————————
-def show_detection_guide():
+def show_emo_detection_guide():
     with st.expander("ℹ️ How Emotion Detection Works", expanded=False):
         st.markdown("""
         *Detection Logic Explained:*
@@ -103,6 +103,19 @@ def show_detection_guide():
         - Use clear, front-facing images
         - Ensure good lighting
         - Avoid obstructed faces
+        """)
+
+def show_loc_detection_guide():
+    with st.expander("ℹ️ How Emotion Detection Works", expanded=False):
+        st.markdown("""
+        *Detection Logic Explained:*
+        - 😊 Happy: Smile present, cheeks raised
+        - 😠 Angry: Eyebrows lowered, eyes wide open
+        - 😐 Neutral: No strong facial movements
+        - 😢 Sad: Eyebrows raised, lip corners down
+        - 😲 Surprise: Eyebrows raised, mouth open
+        - 😨 Fear: Eyes tense, lips stretched
+        - 🤢 Disgust: Nose wrinkled, upper lip raised
         """)
         
 def gradient_card(subtitle):
@@ -133,22 +146,12 @@ def sidebar_design(username):
     
     # Make all sidebar sections consistent in length
     st.sidebar.markdown("---")
-    with st.sidebar.expander("ℹ️ How Emotion Detection Works", expanded=False):
-        st.markdown("""
-        *Detection Logic Explained:*
-        - 😊 Happy: Smile present, cheeks raised
-        - 😠 Angry: Eyebrows lowered, eyes wide open
-        - 😐 Neutral: No strong facial movements
-        - 😢 Sad: Eyebrows raised, lip corners down
-        - 😲 Surprise: Eyebrows raised, mouth open
-        - 😨 Fear: Eyes tense, lips stretched
-        - 🤢 Disgust: Nose wrinkled, upper lip raised
-
-        *Tips for Better Results:*
+    st.markdown("""
+    *Tips for Better Results:*
         - Use clear, front-facing images
         - Ensure good lighting
         - Avoid obstructed faces
-        """)
+    """)
     st.sidebar.info("Enhance your experience by ensuring clear, well-lit facial images.")
     st.sidebar.divider()
     
@@ -448,7 +451,7 @@ def main_app():
                             method = st.session_state.get("location_method", "")
                             st.success(f"📍 Estimated Location: **{location}** ")
                             st.divider()
-                            show_detection_guide()
+                            show_emo_detection_guide()
                             save_history(username, emotions, confidences, location)
                         else:
                             st.warning("No faces were detected in the uploaded image.")
