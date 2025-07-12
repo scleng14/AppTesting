@@ -480,10 +480,10 @@ def main_app():
                 st.caption("**Combined detection** lets the system analyze emotion and location in a single image.")
                 show_loc_detection_guide()
                 st.map(map_df)
-                
             else:
-                st.info("No detected location to display on map.")
-            
+                st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
+                st.warning("📍 Estimated Location is unknown, so the map is not displayed.")
+                
 # ----------------- Run App -----------------
 if __name__ == "__main__":
     # Initialize session state variables
