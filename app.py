@@ -145,12 +145,12 @@ def sidebar_design(username):
     
     # Make all sidebar sections consistent in length
     st.sidebar.markdown("---")
-    st.sidebar.info("""
-    💡 *Tips for Better Results:*
-    - Use clear, front-facing images
-    - Ensure good lighting
-    - Avoid obstructed faces
-    """)
+    # Make all sidebar sections consistent in length
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("## Quick Navigation")
+    st.sidebar.markdown("- Upload and detect emotions")
+    st.sidebar.markdown("- View location map")
+    st.sidebar.divider()
     st.sidebar.info("Enhance your experience by ensuring clear, well-lit facial images.")
     st.sidebar.divider()
     
@@ -433,7 +433,7 @@ def main_app():
                             for emo in emotions:
                                 emotion_counts[emo] = emotion_counts.get(emo, 0) + 1
                                 
-                            with st.expander("Click to expand details"):
+                            with st.expander("Click to view face details"):
                                 for i, (emo, conf) in enumerate(zip(emotions, confidences)):
                                     st.markdown(f"""
                                         <div style="padding-left: 10px; margin-bottom: 8px;">
@@ -446,11 +446,6 @@ def main_app():
                                 total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
                                 st.write(f"**{total_text}**")
                                 
-
-
-
-
-                            
                             method = st.session_state.get("location_method", "")
                             st.success(f"📍 Estimated Location: **{location}** ")
                             st.divider()
