@@ -415,6 +415,7 @@ def main_app():
                     col1, col2 = st.columns([1, 2])
                     with col1:
                         st.subheader("🔍 Detection Results")
+                        st.divider()
                         if detections:
                             emotions = [d["emotion"] for d in detections]
                             confidences = [d["confidence"] for d in detections]
@@ -439,9 +440,15 @@ def main_app():
                                 total_text = "Total: " + ", ".join([f"{count} {emo}" for emo, count in emotion_counts.items()])
                                 st.write(f"**{total_text}**")
                                 
-                            st.divider()
+
+
+
+
+                            
                             method = st.session_state.get("location_method", "")
                             st.success(f"📍 Estimated Location: **{location}** ")
+                            st.divider()
+                            show_detection_guide()
                             save_history(username, emotions, confidences, location)
                         else:
                             st.warning("No faces were detected in the uploaded image.")
