@@ -417,6 +417,7 @@ def main_app():
                                     else:
                                         lat, lon = coords_loc
                                         location = f"{landmark.title()} ({lat:.4f}, {lon:.4f})"
+                                st.session_state["location_str"] = location
                         else:
                             st.write("🔍 No landmark detected with sufficient confidence")
 
@@ -483,11 +484,12 @@ def main_app():
             location = st.session_state.get("location_str", "Unknown")
             landmark = st.session_state.get("landmark", "N/A")
 
+            st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
             show_map = (
                 coords_result is not None
                 and location not in ("Unknown", "Geocoding service unavailable")
             )
-            st.write(f"🔍 CLIP predicted landmark: **{landmark}**")
+            
             
             if show_map:
                 lat, lon = coords_result
