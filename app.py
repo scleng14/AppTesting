@@ -474,6 +474,7 @@ def main_app():
 
         with tabs[1]:
             st.subheader("🗺️ Detected Location Map")
+            st.divider()
             coords_result = st.session_state.get("coords_result", None)
             method = st.session_state.get("location_method", "")
             landmark = st.session_state.get("landmark", "N/A")
